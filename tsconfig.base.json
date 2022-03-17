@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@trackyourhealth/api/common/util": ["libs/api/common/util/src/index.ts"],
       "@trackyourhealth/api/core/util": ["libs/api/core/util/src/index.ts"]
     }
   },
