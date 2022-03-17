@@ -8,7 +8,8 @@
     "env:sync": "sync-dotenv",
     "format:package": "format-package -w",
     "start": "nx serve",
-    "test": "nx test"
+    "test": "nx test",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
@@ -35,6 +36,7 @@
     "eslint": "~8.7.0",
     "eslint-config-prettier": "8.1.0",
     "format-package": "^6.1.0",
+    "husky": "^7.0.0",
     "jest": "27.2.3",
     "nx": "13.9.2",
     "prettier": "^2.5.1",
