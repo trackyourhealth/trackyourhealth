@@ -1,7 +1,7 @@
 FROM node:lts-alpine3.15
 
 WORKDIR /app
-COPY ./../dist/apps/api .
+COPY ./dist/apps/api .
 
 ENV PORT=3333
 EXPOSE ${PORT}

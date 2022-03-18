@@ -53,7 +53,7 @@
       "options": {
         "commands": [
           "nx build api",
-          "docker build -f ./.docker/api.dockerfile . -t api"
+          "docker build -f ./apps/api/Dockerfile . -t api"
         ],
         "parallel": false
       }
