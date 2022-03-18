@@ -2,6 +2,11 @@
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
 
-  "files.eol": "\n"
+  "files.eol": "\n",
+
+  "cSpell.words": ["nestjs"]
 }
