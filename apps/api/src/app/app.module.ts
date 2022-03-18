@@ -5,6 +5,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import environment from '../environments/environment';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ApiModule } from './modules/api.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AppService } from './app.service';
         limit: config.get('THROTTLE_LIMIT'),
       }),
     }),
+    ApiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
