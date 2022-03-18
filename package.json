@@ -17,6 +17,7 @@
     "@nestjs/config": "^2.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
+    "@nestjs/terminus": "^8.0.6",
     "@nestjs/throttler": "^2.0.1",
     "bcrypt": "^5.0.1",
     "env-var": "^7.1.1",
