@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "build": "nx build",
+    "deps:bump": "npx npm-check-updates -iu",
     "env:sync": "sync-dotenv",
     "format:package": "format-package -w",
     "start": "nx serve",
