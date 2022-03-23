@@ -4,7 +4,6 @@
     "api": "apps/api",
     "api-common-util": "libs/api/common/util",
     "api-core-util": "libs/api/core/util",
-    "api-health-feature": "libs/api/health/feature",
-    "api-prisma-util": "libs/api/prisma/util"
+    "api-health-feature": "libs/api/health/feature"
   }
 }
