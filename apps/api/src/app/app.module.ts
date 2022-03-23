@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { PrismaModule } from 'nestjs-prisma';
 
 import environment from '../environments/environment';
 import { AppController } from './app.controller';
@@ -19,6 +20,9 @@ import { ApiModule } from './modules/api.module';
         ttl: config.get('THROTTLE_TTL'),
         limit: config.get('THROTTLE_LIMIT'),
       }),
+    }),
+    PrismaModule.forRoot({
+      isGlobal: true,
     }),
     ApiModule,
   ],
