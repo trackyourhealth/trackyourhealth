@@ -10,3 +10,21 @@ datasource db {
   provider = "postgresql"
   url      = env("DB_CONNECTION_STRING")
 }
+
+model User {
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email String @unique
+  password String
+
+  isVerified Boolean   @default(false)
+  verifiedAt DateTime?
+  isBlocked  Boolean   @default(false)
+
+  settings Json @default("{}")
+  roles Json @default("[]")
+
+  @@map("users")
+}

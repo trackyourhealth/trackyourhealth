@@ -10,6 +10,7 @@ import { ApiModule } from './modules/api.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
       load: [environment],
     }),
     ThrottlerModule.forRootAsync({
