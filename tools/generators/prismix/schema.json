@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "cli": "nx",
+  "$id": "prismix",
+  "type": "object",
+  "properties": {
+    "prismix": {
+      "type": "string",
+      "description": "Input Merge File",
+      "default": "./prismix.config.json",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      }
+    },
+    "format": {
+      "type": "boolean",
+      "description": "Format Prisma Schema",
+      "default": true
+    }
+  },
+  "required": ["prismix"]
+}

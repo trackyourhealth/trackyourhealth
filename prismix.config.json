@@ -1,0 +1,7 @@
+{
+  "input": [
+    "./prisma/base.prisma",
+    "./libs/api/auth/data/src/lib/prisma/user.prisma"
+  ],
+  "output": "./prisma/schema.prisma"
+}
