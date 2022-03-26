@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { PrismaModule } from 'nestjs-prisma';
 
 import environment from '../environments/environment';
 import { AppController } from './app.controller';
@@ -22,6 +23,7 @@ import { ApiModule } from './modules/api.module';
       }),
     }),
     ApiModule,
+    PrismaModule.forRoot({ isGlobal: true }),
   ],
   controllers: [AppController],
   providers: [AppService],
