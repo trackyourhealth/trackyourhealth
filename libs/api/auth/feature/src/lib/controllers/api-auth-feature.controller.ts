@@ -12,6 +12,20 @@ import { ApiAuthFeatureService } from './../services/api-auth-feature.service';
 export class ApiAuthFeatureController {
   constructor(private readonly service: ApiAuthFeatureService) {}
 
+  @OpenApiEndpoint({
+    meta: {
+      summary: 'Login',
+      description: 'Authenticate against the API to get a valid JWT.',
+      tags: ['auth'],
+    },
+    request: {},
+    response: {
+      status: HttpStatus.CREATED,
+    },
+    authentication: {
+      required: false,
+    },
+  })
   @Post('login')
   public async login(@Body() request: LoginRequest) {
     const accessToken = await this.service.login(request);
@@ -30,7 +44,7 @@ export class ApiAuthFeatureController {
 
   @Delete('logout')
   public async logout(@ApiUser() user: User) {
-    this.service.logout();
+    await this.service.logout();
     return;
   }
 }

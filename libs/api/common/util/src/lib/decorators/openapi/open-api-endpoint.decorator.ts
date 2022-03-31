@@ -6,8 +6,10 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiConsumes,
   ApiExcludeEndpoint,
+  ApiExtraModels,
   ApiHeader,
   ApiHeaderOptions,
   ApiOperation,
@@ -19,22 +21,32 @@ import {
   ApiQueryOptions,
   ApiResponse,
   ApiTags,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { ApiAuthGuard, ApiRolesGuard } from '@trackyourhealth/api/auth/util';
+import {
+  Class,
+  CoreTransformer,
+  // CreateDataRequest,
+  CreateDataResponse,
+  CreatePaginatedDataResponse,
+  // DataOutput,
+} from '@trackyourhealth/api/core/util';
 import * as deepmerge from 'deepmerge';
 import { PartialDeep } from 'type-fest';
 
 import { Roles } from '../../enums/roles.enum';
 import { ApiRoles } from '../api-roles.decorator';
+import { ApiTransformer } from '../api-transformer.decorator';
 
 export interface OpenApiEndpointConfiguration {
   meta: ApiOperationOptions;
-  tags: string[];
   authentication: {
     required: boolean;
     roles: Roles[];
   };
   request: {
+    model: Class | undefined;
     mime: string[];
     headers: ApiHeaderOptions[];
     params: ApiParamOptions[];
@@ -45,10 +57,12 @@ export interface OpenApiEndpointConfiguration {
   };
   response: {
     status: HttpStatus;
+    model: Class | undefined;
     mime: string[];
     paginated: boolean;
+    transformer: Class<CoreTransformer<unknown, unknown>> | undefined;
   };
-  exclude: boolean;
+  excludeFromDocs: boolean;
 }
 
 const defaultConfiguration: OpenApiEndpointConfiguration = {
@@ -60,8 +74,8 @@ const defaultConfiguration: OpenApiEndpointConfiguration = {
     required: true,
     roles: [],
   },
-  tags: [],
   request: {
+    model: undefined,
     mime: ['application/json'],
     headers: [],
     params: [],
@@ -72,30 +86,33 @@ const defaultConfiguration: OpenApiEndpointConfiguration = {
   },
   response: {
     status: HttpStatus.OK,
+    model: undefined,
     mime: ['application/json'],
     paginated: false,
+    transformer: undefined,
   },
-  exclude: false,
+  excludeFromDocs: false,
 };
 
-const decoratorsToApply: (
+let decoratorsToApply: (
   | ClassDecorator
   | MethodDecorator
   | PropertyDecorator
 )[] = [];
 
+let extraModels: Class<any>[] = [];
+
 export const OpenApiEndpoint = (
   options: PartialDeep<OpenApiEndpointConfiguration>,
 ) => {
-  // const config = deepmerge(defaultConfiguration, options);
-  /*
-  const config: OpenApiEndpointConfiguration = {
-    ...defaultConfiguration,
-    ...options,
-  };
+  const config = deepmerge(
+    defaultConfiguration,
+    options,
+  ) as OpenApiEndpointConfiguration;
 
   // clear the decorators that should be applied before
   decoratorsToApply = [];
+  extraModels = [];
 
   addApiBasic(config);
   addApiOperation(config);
@@ -105,20 +122,16 @@ export const OpenApiEndpoint = (
   addApiRequest(config);
   addApiResponse(config);
 
+  addApiExtraModels();
+
   return applyDecorators(...decoratorsToApply);
-  */
 };
 
 function addApiBasic(config: OpenApiEndpointConfiguration) {
   const httpCode = HttpCode(config.response.status);
   decoratorsToApply.push(httpCode);
 
-  if (config.tags) {
-    const apiTags = ApiTags(...config.tags);
-    decoratorsToApply.push(apiTags);
-  }
-
-  if (config.exclude === true) {
+  if (config.excludeFromDocs === true) {
     const apiExcludeEndpoint = ApiExcludeEndpoint(true);
     decoratorsToApply.push(apiExcludeEndpoint);
   }
@@ -212,6 +225,29 @@ function addApiRequest(config: OpenApiEndpointConfiguration) {
     });
     decoratorsToApply.push(fieldQuery);
   }
+
+  /* if (config.request.model) {
+    const baseRequestType = CreateDataRequest(config.request.model);
+
+    const apiBody = ApiBody({
+      description: 'Data Input',
+      schema: {
+        allOf: [
+          { $ref: getSchemaPath(baseRequestType) },
+          {
+            properties: {
+              data: {
+                $ref: getSchemaPath(config.request.model),
+              },
+            },
+          },
+        ],
+      },
+    });
+    decoratorsToApply.push(apiBody);
+
+    extraModels.push(baseRequestType, config.request.model);
+  } */
 }
 
 function addApiResponse(config: OpenApiEndpointConfiguration) {
@@ -220,9 +256,45 @@ function addApiResponse(config: OpenApiEndpointConfiguration) {
     decoratorsToApply.push(apiProduces);
   }
 
-  const apiResponse = ApiResponse({
-    status: config.response.status,
-    description: 'The default Response',
-  });
-  decoratorsToApply.push(apiResponse);
+  if (config.response.transformer) {
+    const apiTransformer = ApiTransformer(config.response.transformer);
+    decoratorsToApply.push(apiTransformer);
+  }
+
+  if (config.response.model) {
+    let baseResponseType = CreateDataResponse(config.response.model);
+    if (config.response.paginated) {
+      baseResponseType = CreatePaginatedDataResponse(config.response.model);
+    }
+
+    const apiResponse = ApiResponse({
+      status: config.response.status,
+      description: 'The default Response',
+      schema: {
+        allOf: [
+          { $ref: getSchemaPath(baseResponseType) },
+          {
+            properties: {
+              data: {
+                $ref: getSchemaPath(config.response.model),
+              },
+            },
+          },
+        ],
+      },
+    });
+    decoratorsToApply.push(apiResponse);
+    extraModels.push(baseResponseType, config.response.model);
+  } else {
+    const apiResponse = ApiResponse({
+      status: config.response.status,
+      description: 'The default Response',
+    });
+    decoratorsToApply.push(apiResponse);
+  }
+}
+
+function addApiExtraModels() {
+  const apiExtraModels = ApiExtraModels(...extraModels);
+  decoratorsToApply.push(apiExtraModels);
 }

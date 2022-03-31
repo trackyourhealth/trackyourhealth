@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'nestjs-prisma';
@@ -53,13 +53,17 @@ export class ApiAuthDataService {
   }
 
   async createUser(credentials: CredentialsModel) {
-    return await this.prisma.user.create({
-      data: {
-        email: credentials.email,
-        password: this.passwordHelper.hashPassword(credentials.password),
-        isBlocked: false,
-        isVerified: true,
-      },
-    });
+    try {
+      return await this.prisma.user.create({
+        data: {
+          email: credentials.email,
+          password: this.passwordHelper.hashPassword(credentials.password),
+          isBlocked: false,
+          isVerified: true,
+        },
+      });
+    } catch (error) {
+      throw new ConflictException('User already exists');
+    }
   }
 }
