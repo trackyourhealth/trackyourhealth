@@ -8,6 +8,7 @@
     "api-common-util": "libs/api/common/util",
     "api-core-util": "libs/api/core/util",
     "api-health-feature": "libs/api/health/feature",
-    "api-prisma": "libs/api/prisma"
+    "api-prisma": "libs/api/prisma",
+    "api-studies": "libs/api/studies"
   }
 }
