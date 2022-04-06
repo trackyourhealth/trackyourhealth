@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from 'nestjs-prisma';
+import { PrismaClient } from '@prisma/client';
 
 import { PasswordHelper } from './../helpers/password.helper';
 import { AccessTokenModel } from './../models/access-token.model';
@@ -13,7 +13,7 @@ export class ApiAuthDataService {
     private readonly jwtService: JwtService,
     private readonly passwordHelper: PasswordHelper,
     private readonly configService: ConfigService,
-    private readonly prisma: PrismaService,
+    private readonly prisma: PrismaClient,
   ) {}
 
   generateToken(payload: { userId: string }): AccessTokenModel {
