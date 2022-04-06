@@ -1,7 +1,8 @@
 {
   "input": [
     "./prisma/base.prisma",
-    "./libs/api/auth/data/src/lib/prisma/user.prisma"
+    "./libs/api/auth/data/src/lib/prisma/user.prisma",
+    "./libs/api/studies/src/lib/prisma/studies.prisma"
   ],
   "output": "./prisma/schema.prisma"
 }

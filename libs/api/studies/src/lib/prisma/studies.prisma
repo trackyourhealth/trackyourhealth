@@ -1,0 +1,13 @@
+model Study {
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+  description String?
+
+  startedAt DateTime
+  endsAt DateTime
+
+  @@map("studies")
+}

@@ -25,7 +25,8 @@
       "@trackyourhealth/api/health/feature": [
         "libs/api/health/feature/src/index.ts"
       ],
-      "@trackyourhealth/api/prisma": ["libs/api/prisma/src/index.ts"]
+      "@trackyourhealth/api/prisma": ["libs/api/prisma/src/index.ts"],
+      "@trackyourhealth/api/studies": ["libs/api/studies/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "prisma", "tmp"]
