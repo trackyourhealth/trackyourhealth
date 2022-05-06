@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiBody,
+  // ApiBody,
   ApiConsumes,
   ApiExcludeEndpoint,
   ApiExtraModels,
@@ -20,7 +20,7 @@ import {
   ApiQuery,
   ApiQueryOptions,
   ApiResponse,
-  ApiTags,
+  // ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
 import { ApiAuthGuard, ApiRolesGuard } from '@trackyourhealth/api/auth/util';
@@ -100,6 +100,7 @@ let decoratorsToApply: (
   | PropertyDecorator
 )[] = [];
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let extraModels: Class<any>[] = [];
 
 export const OpenApiEndpoint = (

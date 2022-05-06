@@ -43,6 +43,7 @@ export class ApiAuthFeatureController {
   }
 
   @Delete('logout')
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async logout(@ApiUser() user: User) {
     await this.service.logout();
     return;
