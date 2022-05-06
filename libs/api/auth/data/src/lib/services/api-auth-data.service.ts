@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaClient } from '@prisma/client';
+import { PrismaService } from '@prisma-utils/nestjs-prisma';
 
 import { PasswordHelper } from './../helpers/password.helper';
 import { AccessTokenModel } from './../models/access-token.model';
@@ -13,7 +13,7 @@ export class ApiAuthDataService {
     private readonly jwtService: JwtService,
     private readonly passwordHelper: PasswordHelper,
     private readonly configService: ConfigService,
-    private readonly prisma: PrismaClient,
+    private readonly prismaService: PrismaService,
   ) {}
 
   generateToken(payload: { userId: string }): AccessTokenModel {
@@ -45,16 +45,18 @@ export class ApiAuthDataService {
   }
 
   public async findUserByEmail(email: string) {
-    return await this.prisma.user.findUnique({ where: { email: email } });
+    return await this.prismaService.user.findUnique({
+      where: { email: email },
+    });
   }
 
   public async findUserById(userId: string) {
-    return await this.prisma.user.findUnique({ where: { id: userId } });
+    return await this.prismaService.user.findUnique({ where: { id: userId } });
   }
 
   async createUser(credentials: CredentialsModel) {
     try {
-      return await this.prisma.user.create({
+      return await this.prismaService.user.create({
         data: {
           email: credentials.email,
           password: this.passwordHelper.hashPassword(credentials.password),

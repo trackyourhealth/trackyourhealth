@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { ApiPrismaModule } from '@trackyourhealth/api/prisma';
+import { PrismaModule } from '@prisma-utils/nestjs-prisma';
 
 import environment from '../environments/environment';
 import { AppController } from './app.controller';
@@ -22,7 +22,7 @@ import { ApiModule } from './modules/api.module';
         limit: config.get('THROTTLE_LIMIT'),
       }),
     }),
-    ApiPrismaModule,
+    PrismaModule.forRoot({ isGlobal: true }),
     ApiModule,
   ],
   controllers: [AppController],
