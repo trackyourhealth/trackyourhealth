@@ -8,6 +8,6 @@ export class ApiStudiesController {
 
   @Get()
   async getStudies() {
-    return await this.apiStudiesService.count({});
+    // do nothing
   }
 }
