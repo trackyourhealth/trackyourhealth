@@ -1,6 +1,7 @@
-module.exports = {
-  displayName: 'api-studies',
-  preset: '../../../jest.preset.js',
+/* eslint-disable */
+export default {
+  displayName: 'api-health-feature',
+  preset: '../../../../jest.preset.js',
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json',
@@ -11,5 +12,5 @@ module.exports = {
     '^.+\\.[tj]s$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../../coverage/libs/api/studies',
+  coverageDirectory: '../../../../coverage/libs/api/health/feature',
 };

@@ -1,5 +1,4 @@
 {
-  "root": "libs/api/common/util",
   "sourceRoot": "libs/api/common/util/src",
   "targets": {
     "lint": {
@@ -13,7 +12,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/api/common/util"],
       "options": {
-        "jestConfig": "libs/api/common/util/jest.config.js",
+        "jestConfig": "libs/api/common/util/jest.config.ts",
         "passWithNoTests": true
       }
     }

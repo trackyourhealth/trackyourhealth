@@ -1,5 +1,4 @@
 {
-  "root": "libs/api/prisma",
   "sourceRoot": "libs/api/prisma/src",
   "targets": {
     "lint": {
@@ -13,7 +12,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/api/prisma"],
       "options": {
-        "jestConfig": "libs/api/prisma/jest.config.js",
+        "jestConfig": "libs/api/prisma/jest.config.ts",
         "passWithNoTests": true
       }
     }

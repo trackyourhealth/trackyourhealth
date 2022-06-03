@@ -1,5 +1,4 @@
 {
-  "root": "libs/api/health/feature",
   "sourceRoot": "libs/api/health/feature/src",
   "targets": {
     "lint": {
@@ -13,7 +12,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/api/health/feature"],
       "options": {
-        "jestConfig": "libs/api/health/feature/jest.config.js",
+        "jestConfig": "libs/api/health/feature/jest.config.ts",
         "passWithNoTests": true
       }
     }

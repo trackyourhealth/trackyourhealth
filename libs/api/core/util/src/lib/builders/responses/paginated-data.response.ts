@@ -12,9 +12,9 @@ export interface PaginatedDataOutput<C> {
   };
 }
 
-export function CreatePaginatedDataResponse<C>(
-  OutputClass: Class<C>,
-): Class<PaginatedDataOutput<C>> {
+export function CreatePaginatedDataResponse<C>(): Class<
+  PaginatedDataOutput<C>
+> {
   class CreatePaginatedDataOutput implements PaginatedDataOutput<C> {
     @ApiProperty({ isArray: true })
     data!: C[];

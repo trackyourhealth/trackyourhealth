@@ -1,5 +1,4 @@
 {
-  "root": "libs/api/auth/data",
   "sourceRoot": "libs/api/auth/data/src",
   "targets": {
     "lint": {
@@ -13,7 +12,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/api/auth/data"],
       "options": {
-        "jestConfig": "libs/api/auth/data/jest.config.js",
+        "jestConfig": "libs/api/auth/data/jest.config.ts",
         "passWithNoTests": true
       }
     }
