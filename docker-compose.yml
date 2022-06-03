@@ -13,8 +13,6 @@ services:
       - 8080:4455
       - 4456:4456
     command: serve proxy -c "/etc/config/oathkeeper/oathkeeper.yml"
-    environment:
-      - LOG_LEVEL=debug
     restart: on-failure
     networks:
       - trackyourhealth
@@ -83,23 +81,15 @@ services:
     image: postgres:14.2-alpine
     ports:
       - ${KRATOS_DB_PORT}:5432
-    environment:
-      - POSTGRES_USER=${KRATOS_DB_USER}
-      - POSTGRES_PASSWORD=${KRATOS_DB_PASSWORD}
-      - POSTGRES_DB=${KRATOS_DB_NAME}
     networks:
       - trackyourhealth
 
   kratos-selfservice-ui-node:
     image: oryd/kratos-selfservice-ui-node:v0.10.1
-    environment:
-      - KRATOS_PUBLIC_URL=http://kratos:4433/
-      - KRATOS_BROWSER_URL=http://127.0.0.1:4433/
     networks:
       - trackyourhealth
     ports:
       - '4455:3000'
-    restart: on-failure
 
 volumes:
   data-trackyourhealth-db:

@@ -1,6 +1,10 @@
 version: '3.8'
 
 services:
+  oathkeeper:
+    environment:
+      - LOG_LEVEL=debug
+
   trackyourhealth-api:
     image: node:16-alpine3.14
     volumes:
@@ -18,3 +22,14 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_USER:-pgadmin@local.host}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-pgadmin}
+
+  kratos-db:
+    environment:
+      - POSTGRES_USER=${KRATOS_DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${KRATOS_DB_PASSWORD:-postgres}
+      - POSTGRES_DB=${KRATOS_DB_NAME:-postgres}
+
+  kratos-selfservice-ui-node:
+    environment:
+      - KRATOS_PUBLIC_URL=http://kratos:4433/
+      - KRATOS_BROWSER_URL=http://127.0.0.1:4433/
