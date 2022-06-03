@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import {
   applyDecorators,
   HttpCode,
@@ -121,7 +123,7 @@ export const OpenApiEndpoint = (
   addApiSecurity(config);
 
   addApiRequest(config);
-  addApiResponse(config);
+  // addApiResponse(config);
 
   addApiExtraModels();
 
@@ -251,6 +253,7 @@ function addApiRequest(config: OpenApiEndpointConfiguration) {
   } */
 }
 
+/*
 function addApiResponse(config: OpenApiEndpointConfiguration) {
   if (config.response.mime) {
     const apiProduces = ApiProduces(...config.response.mime);
@@ -294,6 +297,7 @@ function addApiResponse(config: OpenApiEndpointConfiguration) {
     decoratorsToApply.push(apiResponse);
   }
 }
+*/
 
 function addApiExtraModels() {
   const apiExtraModels = ApiExtraModels(...extraModels);

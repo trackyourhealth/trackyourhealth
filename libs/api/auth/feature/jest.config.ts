@@ -1,6 +1,7 @@
-module.exports = {
-  displayName: 'api-prisma',
-  preset: '../../../jest.preset.js',
+/* eslint-disable */
+export default {
+  displayName: 'api-auth-feature',
+  preset: '../../../../jest.preset.js',
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json',
@@ -11,5 +12,5 @@ module.exports = {
     '^.+\\.[tj]s$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../../coverage/libs/api/prisma',
+  coverageDirectory: '../../../../coverage/libs/api/auth/feature',
 };

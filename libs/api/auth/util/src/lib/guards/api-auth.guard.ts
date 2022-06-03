@@ -3,7 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class ApiAuthGuard extends AuthGuard('jwt') {
-  override handleRequest(err: any, user: any, info: Error) {
+  override handleRequest(err: never, user: never, info: Error) {
     if (err || info || !user) {
       throw new UnauthorizedException(err || info);
     }

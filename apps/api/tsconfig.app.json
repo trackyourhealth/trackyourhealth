@@ -8,6 +8,6 @@
     "experimentalDecorators": true,
     "target": "es2017"
   },
-  "exclude": ["**/*.spec.ts", "**/*.test.ts"],
+  "exclude": ["**/*.spec.ts", "**/*.test.ts", "jest.config.ts"],
   "include": ["**/*.ts"]
 }

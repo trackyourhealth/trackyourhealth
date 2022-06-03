@@ -1,5 +1,4 @@
 {
-  "root": "libs/api/studies",
   "sourceRoot": "libs/api/studies/src",
   "targets": {
     "lint": {
@@ -13,7 +12,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/api/studies"],
       "options": {
-        "jestConfig": "libs/api/studies/jest.config.js",
+        "jestConfig": "libs/api/studies/jest.config.ts",
         "passWithNoTests": true
       }
     }
