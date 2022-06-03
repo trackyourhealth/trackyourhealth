@@ -4,6 +4,23 @@ networks:
   trackyourhealth:
 
 services:
+  oathkeeper:
+    container_name: oathkeeper
+    image: oryd/oathkeeper:v0.38
+    depends_on:
+      - kratos
+    ports:
+      - 8080:4455
+      - 4456:4456
+    command: serve proxy -c "/etc/config/oathkeeper/oathkeeper.yml"
+    environment:
+      - LOG_LEVEL=debug
+    restart: on-failure
+    networks:
+      - trackyourhealth
+    volumes:
+      - ./ory/oathkeeper:/etc/config/oathkeeper
+
   trackyourhealth-api:
     container_name: trackyourhealth-api
     ports:
@@ -17,7 +34,7 @@ services:
     container_name: trackyourhealth-db
     image: postgres:14.2-alpine
     ports:
-      - ${DB_PORT}:${DB_PORT}
+      - ${DB_PORT}:5432
     networks:
       - trackyourhealth
 
@@ -31,5 +48,59 @@ services:
     networks:
       - trackyourhealth
 
+  kratos:
+    container_name: kratos
+    image: oryd/kratos:v0.10.1
+    depends_on:
+      - kratos-db
+    networks:
+      - trackyourhealth
+    environment:
+      - DSN=${KRATOS_DB_DSN}
+    ports:
+      - '4433:4433'
+      - '4434:4434'
+    volumes:
+      - type: bind
+        source: ./ory/kratos
+        target: /etc/config/kratos
+    command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
+
+  kratos-migrate:
+    image: oryd/kratos:v0.10.1
+    environment:
+      - DSN=${KRATOS_DB_DSN}
+    networks:
+      - trackyourhealth
+    volumes:
+      - type: bind
+        source: ./ory/kratos
+        target: /etc/config/kratos
+    command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
+
+  kratos-db:
+    container_name: kratos-db
+    image: postgres:14.2-alpine
+    ports:
+      - ${KRATOS_DB_PORT}:5432
+    environment:
+      - POSTGRES_USER=${KRATOS_DB_USER}
+      - POSTGRES_PASSWORD=${KRATOS_DB_PASSWORD}
+      - POSTGRES_DB=${KRATOS_DB_NAME}
+    networks:
+      - trackyourhealth
+
+  kratos-selfservice-ui-node:
+    image: oryd/kratos-selfservice-ui-node:v0.10.1
+    environment:
+      - KRATOS_PUBLIC_URL=http://kratos:4433/
+      - KRATOS_BROWSER_URL=http://127.0.0.1:4433/
+    networks:
+      - trackyourhealth
+    ports:
+      - '4455:3000'
+    restart: on-failure
+
 volumes:
   data-trackyourhealth-db:
+  data-kratos-db:
