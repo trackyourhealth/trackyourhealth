@@ -6,19 +6,22 @@
   "scripts": {
     "build": "nx build",
     "deps:bump": "npx npm-check-updates -iu",
+    "docker:dev:stop": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml stop",
+    "docker:dev:up": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d",
     "env:sync": "sync-dotenv",
     "format:package": "format-package -w",
-    "start": "nx serve",
-    "test": "nx test",
-    "prepare": "husky install",
-    "docker:dev:up": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d",
-    "docker:dev:stop": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml stop",
+    "migrate:deploy": "npx prisma migrate deploy",
     "migrate:dev": "npx prisma migrate dev",
     "migrate:dev:create": "npx prisma migrate dev --create-only",
-    "migrate:deploy": "npx prisma migrate deploy",
+    "prepare": "husky install",
     "prisma:generate": "npx prisma generate",
+    "prisma:seed": "npx prisma db seed",
     "prisma:studio": "npx prisma studio",
-    "prisma:seed": "npx prisma db seed"
+    "start": "nx serve",
+    "test": "nx test"
+  },
+  "prisma": {
+    "seed": "ts-node ./prisma/seed.ts"
   },
   "dependencies": {
     "@nestjs/axios": "0.0.7",
@@ -84,8 +87,5 @@
     "ts-jest": "27.1.4",
     "ts-node": "9.1.1",
     "typescript": "~4.5.2"
-  },
-  "prisma": {
-    "seed": "ts-node ./prisma/seed.ts"
   }
 }
