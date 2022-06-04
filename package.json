@@ -65,7 +65,7 @@
     "@nrwl/nest": "14.1.9",
     "@nrwl/node": "14.1.9",
     "@nrwl/workspace": "14.1.9",
-    "@prisma-utils/prismerge": "^1.0.0",
+    "@prisma-utils/prismerge": "^1.2.0",
     "@types/bcrypt": "^5.0.0",
     "@types/jest": "27.4.1",
     "@types/node": "^16.11.7",

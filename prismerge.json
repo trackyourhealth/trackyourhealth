@@ -1,8 +1,9 @@
 {
-  "input": [
+  "inputs": [
     "./prisma/base.prisma",
     "./libs/api/auth/data/src/lib/prisma/user.prisma",
     "./libs/api/studies/src/lib/prisma/studies.prisma"
   ],
+  "mixins": {},
   "output": "./prisma/schema.prisma"
 }
