@@ -3,7 +3,7 @@ import { Configuration, V0alpha2Api } from '@ory/kratos-client';
 import { Request } from 'express';
 
 @Injectable()
-export class ApiAuthGuard implements CanActivate {
+export class KratosGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest() as Request;
 

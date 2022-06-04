@@ -82,6 +82,7 @@
     "prisma": "^3.11.0",
     "sync-dotenv": "^2.7.0",
     "ts-jest": "27.1.4",
+    "ts-node": "9.1.1",
     "typescript": "~4.5.2"
   },
   "prisma": {
