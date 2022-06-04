@@ -28,6 +28,10 @@ export default () =>
           .required()
           .asIntPositive(),
       },
+
+      kratos: {
+        baseUrl: 'http://trackyourhealth-api:3000',
+      },
     },
 
     security: {

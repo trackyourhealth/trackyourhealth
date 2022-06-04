@@ -8,6 +8,12 @@ export interface ApplicationConfiguration {
     apiPrefix: string;
   };
 
+  auth: {
+    kratos: {
+      baseUrl: string;
+    };
+  };
+
   security: {
     throttler: ThrottlerModuleOptions;
   };
