@@ -1,0 +1,129 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  npm:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: NPM
+        uses: ng-easy/npm-setup@v2
+
+  build:
+    name: Build
+    needs: [npm]
+    runs-on: ubuntu-latest
+    outputs:
+      has-build-artifacts: ${{ steps.check-uploaded-artifacts.outputs.has-build-artifacts }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: NPM
+        uses: ng-easy/npm-setup@v2
+        with:
+          nx-key: build
+
+      - name: Build
+        uses: mansagroup/nrwl-nx-action@v2
+        with:
+          targets: build
+          parallel: 'true'
+          affected: 'false'
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: dist
+          if-no-files-found: ignore
+
+      - name: Check uploaded artifacts
+        id: check-uploaded-artifacts
+        run: echo "::set-output name=has-build-artifacts::${{ hashFiles('dist/**') != '' }}"
+
+  lint:
+    name: Lint
+    needs: [npm]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Fetch latest base branch
+        run: git fetch origin main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: NPM
+        uses: ng-easy/npm-setup@v2
+        with:
+          nx-key: lint
+
+      - name: Lint projects
+        uses: mansagroup/nrwl-nx-action@v2
+        with:
+          targets: lint
+          parallel: 'true'
+          affected: 'false'
+
+  test:
+    name: Test
+    needs: [npm]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Fetch latest base branch
+        run: git fetch origin main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: NPM
+        uses: ng-easy/npm-setup@v2
+        with:
+          nx-key: test
+
+      - name: Test
+        uses: mansagroup/nrwl-nx-action@v2
+        with:
+          targets: test
+          parallel: 'true'
+          maxParallel: '3'
+          affected: 'false'
