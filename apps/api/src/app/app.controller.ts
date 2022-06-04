@@ -1,8 +1,8 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
+import { KratosUser } from '@trackyourhealth/api/common/util';
+import { KratosGuard } from '@trackyourhealth/api/kratos/util';
 
 import { AppService } from './app.service';
-import { ApiAuthGuard } from './middlewares/auth.guard';
-import { User } from './middlewares/user.decorator';
 
 @Controller()
 export class AppController {
@@ -13,9 +13,9 @@ export class AppController {
     return this.appService.getData();
   }
 
-  @UseGuards(ApiAuthGuard)
+  @UseGuards(KratosGuard)
   @Get('foo')
-  getFoo(@User() user) {
+  getFoo(@KratosUser() user) {
     console.log(user);
     return 'foo';
   }
