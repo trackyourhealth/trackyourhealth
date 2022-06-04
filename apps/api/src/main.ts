@@ -23,7 +23,7 @@ async function bootstrap() {
   app.setGlobalPrefix(globalPrefix);
 
   // register some global pipes
-  app.useGlobalPipes(new TrimPipe());
+  // app.useGlobalPipes(new TrimPipe());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

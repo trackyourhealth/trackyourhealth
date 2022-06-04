@@ -1,3 +1,5 @@
+// TODO: this pipe fails for GET Requests!
+
 import {
   ArgumentMetadata,
   BadRequestException,
