@@ -13,6 +13,7 @@
     "migrate:deploy": "npx prisma migrate deploy",
     "migrate:dev": "npx prisma migrate dev",
     "migrate:dev:create": "npx prisma migrate dev --create-only",
+    "nx": "nx",
     "prepare": "husky install",
     "prisma:generate": "npx prisma generate",
     "prisma:seed": "npx prisma db seed",
