@@ -1,6 +1,8 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 
 import { AppService } from './app.service';
+import { ApiAuthGuard } from './middlewares/auth.guard';
+import { User } from './middlewares/user.decorator';
 
 @Controller()
 export class AppController {
@@ -9,5 +11,12 @@ export class AppController {
   @Get()
   getData() {
     return this.appService.getData();
+  }
+
+  @UseGuards(ApiAuthGuard)
+  @Get('foo')
+  getFoo(@User() user) {
+    console.log(user);
+    return 'foo';
   }
 }
