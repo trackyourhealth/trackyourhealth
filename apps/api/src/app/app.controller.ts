@@ -1,7 +1,6 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { Session } from '@ory/kratos-client';
-import { KratosUser } from '@trackyourhealth/api/common/util';
-import { KratosGuard } from '@trackyourhealth/api/kratos/util';
+import { KratosGuard, KratosUser } from '@trackyourhealth/api/kratos/util';
 
 import { AppService } from './app.service';
 
