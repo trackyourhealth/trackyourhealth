@@ -9,7 +9,6 @@
     "api-core-util": "libs/api/core/util",
     "api-health-feature": "libs/api/health/feature",
     "api-kratos-util": "libs/api/kratos/util",
-    "api-prisma": "libs/api/prisma",
     "api-studies": "libs/api/studies"
   }
 }

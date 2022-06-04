@@ -26,7 +26,6 @@
         "libs/api/health/feature/src/index.ts"
       ],
       "@trackyourhealth/api/kratos/util": ["libs/api/kratos/util/src/index.ts"],
-      "@trackyourhealth/api/prisma": ["libs/api/prisma/src/index.ts"],
       "@trackyourhealth/api/studies": ["libs/api/studies/src/index.ts"]
     }
   },
