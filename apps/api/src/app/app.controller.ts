@@ -1,4 +1,5 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Session } from '@ory/kratos-client';
 import { KratosUser } from '@trackyourhealth/api/common/util';
 import { KratosGuard } from '@trackyourhealth/api/kratos/util';
 
@@ -15,8 +16,8 @@ export class AppController {
 
   @UseGuards(KratosGuard)
   @Get('foo')
-  getFoo(@KratosUser() user) {
-    console.log(user);
+  getFoo(@KratosUser() user: Session) {
+    console.log(user.identity);
     return 'foo';
   }
 }

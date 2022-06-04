@@ -25,7 +25,6 @@ import {
   // ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { ApiAuthGuard, ApiRolesGuard } from '@trackyourhealth/api/auth/util';
 import {
   Class,
   CoreTransformer,
@@ -34,6 +33,7 @@ import {
   CreatePaginatedDataResponse,
   // DataOutput,
 } from '@trackyourhealth/api/core/util';
+import { KratosGuard } from '@trackyourhealth/api/kratos/util';
 import * as deepmerge from 'deepmerge';
 import { PartialDeep } from 'type-fest';
 
@@ -150,16 +150,17 @@ function addApiSecurity(config: OpenApiEndpointConfiguration) {
     const apiBearerAuth = ApiBearerAuth();
     decoratorsToApply.push(apiBearerAuth);
 
-    const apiAuthGuard = UseGuards(ApiAuthGuard);
-    decoratorsToApply.push(apiAuthGuard);
+    const kratosGuard = UseGuards(KratosGuard);
+    decoratorsToApply.push(kratosGuard);
 
-    if (config.authentication.roles) {
-      const apiRoles = ApiRoles(...config.authentication.roles);
-      decoratorsToApply.push(apiRoles);
+    // TODO: fix this
+    // if (config.authentication.roles) {
+    //   const apiRoles = ApiRoles(...config.authentication.roles);
+    //   decoratorsToApply.push(apiRoles);
 
-      const apiRolesGuard = UseGuards(ApiRolesGuard);
-      decoratorsToApply.push(apiRolesGuard);
-    }
+    //   const apiRolesGuard = UseGuards(ApiRolesGuard);
+    //   decoratorsToApply.push(apiRolesGuard);
+    // }
   }
 }
 
