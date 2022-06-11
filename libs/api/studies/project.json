@@ -1,16 +1,23 @@
 {
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/api/studies/src",
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
-        "lintFilePatterns": ["libs/api/studies/**/*.ts"]
+        "lintFilePatterns": [
+          "libs/api/studies/**/*.ts"
+        ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/api/studies"],
+      "outputs": [
+        "coverage/libs/api/studies"
+      ],
       "options": {
         "jestConfig": "libs/api/studies/jest.config.ts",
         "passWithNoTests": true

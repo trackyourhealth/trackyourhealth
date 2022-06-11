@@ -1,16 +1,23 @@
 {
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/api/auth/data/src",
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
-        "lintFilePatterns": ["libs/api/auth/data/**/*.ts"]
+        "lintFilePatterns": [
+          "libs/api/auth/data/**/*.ts"
+        ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/api/auth/data"],
+      "outputs": [
+        "coverage/libs/api/auth/data"
+      ],
       "options": {
         "jestConfig": "libs/api/auth/data/jest.config.ts",
         "passWithNoTests": true
