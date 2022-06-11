@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, HttpStatus, Post } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { CredentialsModel } from '@trackyourhealth/api/auth/data';
-import { ApiUser } from '@trackyourhealth/api/common/util';
 import { OpenApiEndpoint } from '@trackyourhealth/api/common/util';
 
 import { LoginRequest } from './../data/requests/login.request';
@@ -40,12 +39,5 @@ export class ApiAuthFeatureController {
     };
     const accessToken = this.service.register(dto);
     return accessToken;
-  }
-
-  @Delete('logout')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async logout(@ApiUser() user: User) {
-    await this.service.logout();
-    return;
   }
 }

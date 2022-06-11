@@ -19,7 +19,6 @@
       "@trackyourhealth/api/auth/feature": [
         "libs/api/auth/feature/src/index.ts"
       ],
-      "@trackyourhealth/api/auth/util": ["libs/api/auth/util/src/index.ts"],
       "@trackyourhealth/api/common/util": ["libs/api/common/util/src/index.ts"],
       "@trackyourhealth/api/core/util": ["libs/api/core/util/src/index.ts"],
       "@trackyourhealth/api/health/feature": [

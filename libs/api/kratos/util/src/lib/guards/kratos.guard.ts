@@ -20,7 +20,6 @@ export class KratosGuard implements CanActivate {
       (request as Request & { user: any }).user = result.data;
       return true;
     } catch {
-      console.log('it failed');
       return false;
     }
   }
