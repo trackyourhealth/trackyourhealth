@@ -1,16 +1,23 @@
 {
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/api/health/feature/src",
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
-        "lintFilePatterns": ["libs/api/health/feature/**/*.ts"]
+        "lintFilePatterns": [
+          "libs/api/health/feature/**/*.ts"
+        ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/api/health/feature"],
+      "outputs": [
+        "coverage/libs/api/health/feature"
+      ],
       "options": {
         "jestConfig": "libs/api/health/feature/jest.config.ts",
         "passWithNoTests": true
