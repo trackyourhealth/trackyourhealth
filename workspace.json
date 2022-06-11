@@ -4,7 +4,6 @@
     "api": "apps/api",
     "api-auth-data": "libs/api/auth/data",
     "api-auth-feature": "libs/api/auth/feature",
-    "api-auth-util": "libs/api/auth/util",
     "api-common-util": "libs/api/common/util",
     "api-core-util": "libs/api/core/util",
     "api-health-feature": "libs/api/health/feature",
