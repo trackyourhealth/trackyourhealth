@@ -19,16 +19,6 @@ export default () =>
     },
 
     auth: {
-      jwt: {
-        secret: env.get('JWT_SECRET').required().asString(),
-        expiresIn: env.get('JWT_EXPIRES_IN').required().asIntPositive(),
-        refreshIn: env.get('JWT_REFRESH_IN').required().asIntPositive(),
-        bcryptSaltRounds: env
-          .get('JWT_BCRYPT_SALTROUNDS')
-          .required()
-          .asIntPositive(),
-      },
-
       kratos: {
         baseUrl: 'http://trackyourhealth-api:3000',
       },
