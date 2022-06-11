@@ -2,8 +2,6 @@
   "version": 2,
   "projects": {
     "api": "apps/api",
-    "api-auth-data": "libs/api/auth/data",
-    "api-auth-feature": "libs/api/auth/feature",
     "api-common-util": "libs/api/common/util",
     "api-core-util": "libs/api/core/util",
     "api-health-feature": "libs/api/health/feature",
