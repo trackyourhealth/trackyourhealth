@@ -17,6 +17,7 @@ export class ApiHealthFeatureController {
   check() {
     return this.health.check([
       () => this.http.pingCheck('google', 'https://www.google.com'),
+      () => this.http.pingCheck('kratos', 'http://kratos:4433/health/alive'),
     ]);
   }
 }
