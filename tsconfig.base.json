@@ -20,7 +20,11 @@
       "@trackyourhealth/api/health/feature": [
         "libs/api/health/feature/src/index.ts"
       ],
-      "@trackyourhealth/api/kratos/util": ["libs/api/kratos/util/src/index.ts"]
+      "@trackyourhealth/api/kratos/util": ["libs/api/kratos/util/src/index.ts"],
+      "@trackyourhealth/api/study/data": ["libs/api/study/data/src/index.ts"],
+      "@trackyourhealth/api/study/feature": [
+        "libs/api/study/feature/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "prisma", "tmp"]
