@@ -1,8 +1,5 @@
 {
-  "inputs": [
-    "./prisma/base.prisma",
-    "./libs/api/studies/src/lib/prisma/studies.prisma"
-  ],
+  "inputs": ["./prisma/base.prisma"],
   "mixins": {},
   "output": "./prisma/schema.prisma"
 }
