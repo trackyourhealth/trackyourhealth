@@ -4,6 +4,7 @@
     "esbenp.prettier-vscode",
     "firsttris.vscode-jest-runner",
     "dbaeumer.vscode-eslint",
-    "Prisma.prisma"
+    "Prisma.prisma",
+    "eamodio.gitlens"
   ]
 }

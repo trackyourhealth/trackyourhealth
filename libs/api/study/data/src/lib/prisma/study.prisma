@@ -1,0 +1,14 @@
+model Study {
+__id__
+
+name String
+title Json @default("{}")
+description Json @default("{}")
+
+isActive Boolean @default(false)
+
+startsAt DateTime @default(now())
+endsAt DateTime?
+
+@@map("studies")
+}

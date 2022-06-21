@@ -31,3 +31,21 @@ datasource db {
   provider = "postgresql"
   url      = env("DB_CONNECTION_STRING")
 }
+
+model Study {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+  name        String
+  title       Json   @default("{}")
+  description Json   @default("{}")
+
+  isActive Boolean @default(false)
+
+  startsAt DateTime  @default(now())
+  endsAt   DateTime?
+
+  @@map("studies")
+}
