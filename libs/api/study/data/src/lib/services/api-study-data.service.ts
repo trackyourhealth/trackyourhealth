@@ -10,6 +10,16 @@ export class ApiStudyDataService {
     const whereActive: Prisma.StudyFindManyArgs = {
       where: { isActive: true },
     };
-    return await this.prismaService.study.findMany(whereActive);
+    return this.prismaService.study.findMany(whereActive);
+  }
+
+  async getStudyById(studyId: string): Promise<Study | null> {
+    if (!studyId) {
+      return null;
+    }
+    const whereId: Prisma.StudyFindUniqueArgs = {
+      where: { id: studyId },
+    };
+    return this.prismaService.study.findUnique(whereId);
   }
 }

@@ -1,51 +1,8 @@
 import { Test } from '@nestjs/testing';
-import { Prisma, Study } from '@prisma/client';
 import { PrismaService } from '@prisma-utils/nestjs-prisma';
 
+import { prismaStudyMock } from '../../../../mocks/';
 import { ApiStudyDataService } from './api-study-data.service';
-
-const studies: Study[] = [
-  {
-    id: '1234',
-    name: 'teststudy1234',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    title: 'teststudy',
-    description: 'study for testing',
-    isActive: true,
-    startsAt: new Date(),
-    endsAt: new Date(),
-  },
-  {
-    id: '4321',
-    name: 'teststudy4321',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    title: 'teststudy',
-    description: 'study for testing',
-    isActive: false,
-    startsAt: new Date(),
-    endsAt: new Date(),
-  },
-];
-
-const mockFindManyStudies = async (
-  options?: Prisma.StudyFindManyArgs,
-): Promise<Study[]> => {
-  const whereOpts = options?.where;
-  if (whereOpts) {
-    if (typeof whereOpts.isActive === 'boolean') {
-      return studies.filter((study) => study.isActive === whereOpts.isActive);
-    }
-  }
-  return studies;
-};
-
-const mockStudyPrisma = {
-  study: {
-    findMany: mockFindManyStudies,
-  },
-};
 
 describe('ApiStudyDataService', () => {
   let service: ApiStudyDataService;
@@ -55,7 +12,7 @@ describe('ApiStudyDataService', () => {
       providers: [ApiStudyDataService, PrismaService],
     })
       .overrideProvider(PrismaService)
-      .useValue(mockStudyPrisma)
+      .useValue(prismaStudyMock.service)
       .compile();
     service = module.get(ApiStudyDataService);
   });
@@ -67,7 +24,27 @@ describe('ApiStudyDataService', () => {
   describe('getAllActiveStudies', () => {
     it('returns active studies', async () => {
       const result = await service.getAllActiveStudies();
-      expect(result).toStrictEqual([studies[0]]);
+      expect(result).toStrictEqual(prismaStudyMock.getActiveStudies());
+    });
+  });
+
+  describe('getStudyById', () => {
+    it('returns study on valid studyId', async () => {
+      const expectedStudy = prismaStudyMock.getFirstStudy();
+      const studyId = expectedStudy.id;
+      const result = await service.getStudyById(studyId);
+      expect(result).toStrictEqual(expectedStudy);
+    });
+
+    it('returns null on invalid studyId', async () => {
+      const invalidStudyId = 'invalid and not used studyId';
+      const result = await service.getStudyById(invalidStudyId);
+      expect(result).toBeNull();
+    });
+
+    it('returns null on empty studyId', async () => {
+      const result = await service.getStudyById('');
+      expect(result).toBeNull();
     });
   });
 });
