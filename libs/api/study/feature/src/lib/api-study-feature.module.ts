@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
+import { ApiStudyDataModule } from '@trackyourhealth/api/study/data';
 
 import { ApiStudyFeatureController } from './api-study-feature.controller';
 
 @Module({
   controllers: [ApiStudyFeatureController],
+  imports: [ApiStudyDataModule],
   providers: [],
   exports: [],
 })

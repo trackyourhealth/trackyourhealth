@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { ApiStudyDataService } from './api-study-data.service';
+import { ApiStudyDataService } from './services/api-study-data.service';
 
 @Module({
   controllers: [],
