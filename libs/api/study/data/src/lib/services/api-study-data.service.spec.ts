@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { PrismaService } from '@prisma-utils/nestjs-prisma';
 
-import { prismaStudyMock } from '../../../../mocks/';
+import { prismaStudyMock } from '../../../../mocks';
 import { ApiStudyDataService } from './api-study-data.service';
 
 describe('ApiStudyDataService', () => {
@@ -23,6 +23,7 @@ describe('ApiStudyDataService', () => {
 
   describe('getAllActiveStudies', () => {
     it('returns active studies', async () => {
+      expect.assertions(1);
       const result = await service.getAllActiveStudies();
       expect(result).toStrictEqual(prismaStudyMock.getActiveStudies());
     });
@@ -30,19 +31,21 @@ describe('ApiStudyDataService', () => {
 
   describe('getStudyById', () => {
     it('returns study on valid studyId', async () => {
+      expect.assertions(1);
       const expectedStudy = prismaStudyMock.getFirstStudy();
-      const studyId = expectedStudy.id;
-      const result = await service.getStudyById(studyId);
+      const result = await service.getStudyById(expectedStudy.id);
       expect(result).toStrictEqual(expectedStudy);
     });
 
     it('returns null on invalid studyId', async () => {
+      expect.assertions(1);
       const invalidStudyId = 'invalid and not used studyId';
       const result = await service.getStudyById(invalidStudyId);
       expect(result).toBeNull();
     });
 
     it('returns null on empty studyId', async () => {
+      expect.assertions(1);
       const result = await service.getStudyById('');
       expect(result).toBeNull();
     });
