@@ -27,6 +27,7 @@ export class RequestParserService {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   parseQuery(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     query: any,
     options: Partial<RequestQueryOptions> = {},
   ): ParsedQueryModel {
