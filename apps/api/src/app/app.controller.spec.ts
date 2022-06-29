@@ -16,7 +16,15 @@ describe('AppController', () => {
   describe('getData', () => {
     it('should return "Welcome to api!"', () => {
       const appController = app.get<AppController>(AppController);
-      expect(appController.getData()).toEqual({ message: 'Welcome to api!' });
+      expect(
+        appController.getData({
+          page: 1,
+          select: {},
+          skip: 0,
+          sort: [],
+          take: 20,
+        }),
+      ).toEqual({ message: 'Welcome to api!' });
     });
   });
 });
