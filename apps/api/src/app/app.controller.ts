@@ -1,5 +1,9 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import {
+  ParsedQueryModel,
+  RequestParser,
+} from '@trackyourhealth/api/common/util';
+import {
   KratosGuard,
   KratosSession,
   KratosUser,
@@ -12,7 +16,8 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  getData() {
+  getData(@RequestParser() parsedRequest: ParsedQueryModel) {
+    console.log(parsedRequest);
     return this.appService.getData();
   }
 
