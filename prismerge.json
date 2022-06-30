@@ -1,10 +1,12 @@
 {
-  "inputs": [
-    "./libs/api/core/util/src/lib/prisma/base.prisma",
-    "./libs/api/study/data/src/lib/prisma/study.prisma"
-  ],
-  "mixins": {
-    "id": "./libs/api/core/util/src/lib/prisma/mixins/id.prisma.mixin"
-  },
-  "output": "./prisma/schema.prisma"
+  "api": {
+    "inputs": [
+      "./libs/api/core/util/src/lib/prisma/base.prisma",
+      "./libs/api/study/data/src/lib/prisma/study.prisma"
+    ],
+    "fragments": {
+      "id": "./libs/api/core/util/src/lib/prisma/fragments/id.prisma.fragment"
+    },
+    "output": "./prisma/schema.prisma"
+  }
 }
