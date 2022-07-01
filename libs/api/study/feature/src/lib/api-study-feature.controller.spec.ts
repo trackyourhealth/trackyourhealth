@@ -1,8 +1,8 @@
 import { Test } from '@nestjs/testing';
 import { PrismaService } from '@prisma-utils/nestjs-prisma';
 import { ApiStudyDataService } from '@trackyourhealth/api/study/data';
+import { prismaStudyMock } from '@trackyourhealth/api/testing/util';
 
-import { prismaStudyMock } from '../../../mocks';
 import { ApiStudyFeatureController } from './api-study-feature.controller';
 
 describe('ApiStudyFeatureController', () => {
@@ -27,7 +27,7 @@ describe('ApiStudyFeatureController', () => {
   describe('getAllActiveStudies', () => {
     it('returns all active studies', async () => {
       expect.assertions(1);
-      const result = await controller.getAllActiveStudies();
+      const result = await controller.getAllStudies();
       expect(result).toStrictEqual(prismaStudyMock.getActiveStudies());
     });
   });

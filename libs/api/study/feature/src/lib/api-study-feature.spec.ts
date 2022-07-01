@@ -1,15 +1,15 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { PrismaService } from '@prisma-utils/nestjs-prisma';
+import { prismaStudyMock } from '@trackyourhealth/api/testing/util';
 import * as request from 'supertest';
 
-import { prismaStudyMock } from '../../../mocks';
 import { apiStudyFeature } from './api-study-feature';
 import { ApiStudyFeatureModule } from './api-study-feature.module';
 
 describe('ApiStudyFeature', () => {
   let app: INestApplication;
-  const baseRoute = '/api-study-feature';
+  const baseRoute = '/studies';
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
