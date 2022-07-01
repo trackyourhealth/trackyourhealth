@@ -51,6 +51,29 @@
         }
       },
       "tags": []
+    },
+    "api-testing-util": {
+      "root": "libs/api/testing/util",
+      "sourceRoot": "libs/api/testing/util/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/api/testing/util/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/api/testing/util"],
+          "options": {
+            "jestConfig": "libs/api/testing/util/jest.config.ts",
+            "passWithNoTests": true
+          }
+        }
+      },
+      "tags": []
     }
   },
   "$schema": "./node_modules/nx/schemas/workspace-schema.json"
