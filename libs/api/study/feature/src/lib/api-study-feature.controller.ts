@@ -5,16 +5,21 @@ import {
   HttpStatus,
   Param,
 } from '@nestjs/common';
-import { Study } from '@prisma/client';
+import { Prisma, Study } from '@prisma/client';
 import { ApiStudyDataService } from '@trackyourhealth/api/study/data';
 
-@Controller('api-study-feature')
+@Controller('studies')
 export class ApiStudyFeatureController {
   constructor(private readonly apiStudyDataService: ApiStudyDataService) {}
 
   @Get()
-  async getAllActiveStudies(): Promise<Study[]> {
-    return this.apiStudyDataService.getAllActiveStudies();
+  async getAllStudies(): Promise<Study[]> {
+    const options: Prisma.StudyFindManyArgs = {
+      where: {
+        isActive: true,
+      },
+    };
+    return this.apiStudyDataService.getAllStudies(options);
   }
 
   @Get(':studyId')

@@ -6,17 +6,11 @@ import { PrismaService } from '@prisma-utils/nestjs-prisma';
 export class ApiStudyDataService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getAllActiveStudies(): Promise<Study[]> {
-    const whereActive: Prisma.StudyFindManyArgs = {
-      where: { isActive: true },
-    };
-    return this.prismaService.study.findMany(whereActive);
+  async getAllStudies(options?: Prisma.StudyFindManyArgs) {
+    return this.prismaService.study.findMany(options);
   }
 
   async getStudyById(studyId: string): Promise<Study | null> {
-    if (!studyId) {
-      return null;
-    }
     const whereId: Prisma.StudyFindUniqueArgs = {
       where: { id: studyId },
     };
