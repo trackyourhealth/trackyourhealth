@@ -48,7 +48,15 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
     .setTitle(configService.get('api.name'))
     .setDescription('API Documentation')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        description: 'Send the Auth Token as "X-Session-Token" http header.',
+        type: 'apiKey',
+        in: 'header',
+        name: 'x-session-token',
+      },
+      'kratos',
+    )
     .setVersion(configService.get('api.docs.version'))
     .build();
 
