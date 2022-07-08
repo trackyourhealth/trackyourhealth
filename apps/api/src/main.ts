@@ -7,7 +7,10 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { TrimPipe } from '@trackyourhealth/api/common/util';
+import {
+  DataTransformerInterceptor,
+  HttpExceptionFilter,
+} from '@trackyourhealth/api/common/util';
 import helmet from 'helmet';
 
 import { AppModule } from './app/app.module';
@@ -23,7 +26,6 @@ async function bootstrap() {
   app.setGlobalPrefix(globalPrefix);
 
   // register some global pipes
-  // app.useGlobalPipes(new TrimPipe());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -42,6 +44,9 @@ async function bootstrap() {
         }),
     }),
   );
+
+  app.useGlobalInterceptors(new DataTransformerInterceptor());
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   const port = configService.get('api.port');
 

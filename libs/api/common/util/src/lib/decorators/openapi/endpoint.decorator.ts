@@ -6,11 +6,17 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiConsumes,
   ApiExcludeEndpoint,
+  ApiExtraModels,
+  ApiHeader,
   ApiHeaderOptions,
   ApiOperation,
   ApiOperationOptions,
+  ApiParam,
   ApiParamOptions,
+  ApiProduces,
+  ApiQuery,
   ApiQueryOptions,
 } from '@nestjs/swagger';
 import { Class } from '@trackyourhealth/api/core/util';
@@ -24,17 +30,17 @@ export interface EndpointConfiguration {
     required: boolean;
   };
   request: {
-    mime: string[];
+    mimeTypes: string[];
     headers: ApiHeaderOptions[];
-    params: ApiParamOptions[];
-    queries: ApiQueryOptions[];
+    pathParams: ApiParamOptions[];
+    queryParams: ApiQueryOptions[];
     addPaginationQueryParams: boolean;
-    addSelectQueryParams: boolean;
+    // addSelectQueryParams: boolean;
     addSortQueryParams: boolean;
   };
   response: {
     status: HttpStatus;
-    mime: string[];
+    mimeTypes: string[];
     paginated: boolean;
   };
   excludeFromDocs: boolean;
@@ -46,17 +52,16 @@ const defaultConfiguration: EndpointConfiguration = {
     required: true,
   },
   request: {
-    mime: ['application/json'],
+    mimeTypes: ['application/json'],
     headers: [],
-    params: [],
-    queries: [],
+    pathParams: [],
+    queryParams: [],
     addPaginationQueryParams: false,
-    addSelectQueryParams: false,
     addSortQueryParams: false,
   },
   response: {
     status: HttpStatus.OK,
-    mime: ['application/json'],
+    mimeTypes: ['application/json'],
     paginated: false,
   },
   excludeFromDocs: false,
@@ -85,10 +90,10 @@ export const Endpoint = (options: PartialDeep<EndpointConfiguration>) => {
 
   addApiSecurity(config);
 
-  // addApiRequest(config);
-  // // addApiResponse(config);
+  addApiRequest(config);
+  addApiResponse(config);
 
-  // addApiExtraModels();
+  addApiExtraModels();
 
   return applyDecorators(...decoratorsToApply);
 };
@@ -126,16 +131,14 @@ function addApiSecurity(config: EndpointConfiguration) {
   }
 }
 
-/*
-
-function addApiRequest(config: OpenApiEndpointConfiguration) {
-  if (config.request.mime) {
-    const apiConsumes = ApiConsumes(...config.request.mime);
+function addApiRequest(config: EndpointConfiguration) {
+  if (config.request.mimeTypes) {
+    const apiConsumes = ApiConsumes(...config.request.mimeTypes);
     decoratorsToApply.push(apiConsumes);
   }
 
-  if (config.request.params) {
-    config.request.params.forEach((param) => {
+  if (config.request.pathParams) {
+    config.request.pathParams.forEach((param) => {
       const apiParam = ApiParam(param);
       decoratorsToApply.push(apiParam);
     });
@@ -148,14 +151,14 @@ function addApiRequest(config: OpenApiEndpointConfiguration) {
     });
   }
 
-  if (config.request.queries) {
-    config.request.queries.forEach((query) => {
+  if (config.request.queryParams) {
+    config.request.queryParams.forEach((query) => {
       const apiQuery = ApiQuery(query);
       decoratorsToApply.push(apiQuery);
     });
   }
 
-  if (config.request.addPaginationQueries) {
+  if (config.request.addPaginationQueryParams) {
     const limitQuery = ApiQuery({
       name: 'limit',
       description: 'Items per Page',
@@ -173,7 +176,7 @@ function addApiRequest(config: OpenApiEndpointConfiguration) {
     decoratorsToApply.push(pageQuery);
   }
 
-  if (config.request.addSortQueries) {
+  if (config.request.addSortQueryParams) {
     const sortQuery = ApiQuery({
       name: 'sort',
       description:
@@ -184,7 +187,8 @@ function addApiRequest(config: OpenApiEndpointConfiguration) {
     decoratorsToApply.push(sortQuery);
   }
 
-  if (config.request.addSelectQueries) {
+  /*
+  if (config.request.addSelectQueryParams) {
     const fieldQuery = ApiQuery({
       name: 'select',
       description: 'Select only specific fields from the API',
@@ -193,7 +197,9 @@ function addApiRequest(config: OpenApiEndpointConfiguration) {
     });
     decoratorsToApply.push(fieldQuery);
   }
+  */
 
+  /*
   if (config.request.model) {
     const baseRequestType = CreateDataRequest(config.request.model);
 
@@ -216,14 +222,16 @@ function addApiRequest(config: OpenApiEndpointConfiguration) {
 
     extraModels.push(baseRequestType, config.request.model);
   }
+  */
 }
 
-function addApiResponse(config: OpenApiEndpointConfiguration) {
-  if (config.response.mime) {
-    const apiProduces = ApiProduces(...config.response.mime);
+function addApiResponse(config: EndpointConfiguration) {
+  if (config.response.mimeTypes) {
+    const apiProduces = ApiProduces(...config.response.mimeTypes);
     decoratorsToApply.push(apiProduces);
   }
 
+  /*
   if (config.response.transformer) {
     const apiTransformer = ApiTransformer(config.response.transformer);
     decoratorsToApply.push(apiTransformer);
@@ -260,5 +268,10 @@ function addApiResponse(config: OpenApiEndpointConfiguration) {
     });
     decoratorsToApply.push(apiResponse);
   }
+  */
 }
-*/
+
+function addApiExtraModels() {
+  const apiExtraModels = ApiExtraModels(...extraModels);
+  decoratorsToApply.push(apiExtraModels);
+}
