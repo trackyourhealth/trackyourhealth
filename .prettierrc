@@ -3,5 +3,6 @@
   "printWidth": 80,
   "semi": true,
   "trailingComma": "all",
-  "arrowParens": "always"
+  "arrowParens": "always",
+  "proseWrap": "always"
 }
