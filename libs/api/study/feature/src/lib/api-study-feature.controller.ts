@@ -1,11 +1,17 @@
 import {
+  Body,
   Controller,
   Get,
   HttpException,
   HttpStatus,
   Param,
+  Post,
 } from '@nestjs/common';
 import { Prisma, Study } from '@prisma/client';
+import {
+  ParsedQueryModel,
+  RequestParser,
+} from '@trackyourhealth/api/common/util';
 import { ApiStudyDataService } from '@trackyourhealth/api/study/data';
 
 @Controller('studies')
@@ -13,13 +19,10 @@ export class ApiStudyFeatureController {
   constructor(private readonly apiStudyDataService: ApiStudyDataService) {}
 
   @Get()
-  async getAllStudies(): Promise<Study[]> {
-    const options: Prisma.StudyFindManyArgs = {
-      where: {
-        isActive: true,
-      },
-    };
-    return this.apiStudyDataService.getAllStudies(options);
+  async getAllStudies(
+    @RequestParser() parsedOptions: ParsedQueryModel,
+  ): Promise<Study[]> {
+    return this.apiStudyDataService.getAllStudies(parsedOptions);
   }
 
   @Get(':studyId')
@@ -29,5 +32,12 @@ export class ApiStudyFeatureController {
       throw new HttpException('No such study exists', HttpStatus.NOT_FOUND);
     }
     return result;
+  }
+
+  @Post()
+  async createStudy(
+    @Body('studies') studyInput: Prisma.StudyCreateInput[],
+  ): Promise<Study[]> {
+    return this.apiStudyDataService.createStudies(studyInput);
   }
 }

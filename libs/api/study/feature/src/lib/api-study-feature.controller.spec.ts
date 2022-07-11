@@ -1,5 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { PrismaService } from '@prisma-utils/nestjs-prisma';
+import { ParsedQueryModel } from '@trackyourhealth/api/common/util';
 import { ApiStudyDataService } from '@trackyourhealth/api/study/data';
 import { prismaStudyMock } from '@trackyourhealth/api/testing/util';
 
@@ -27,7 +28,7 @@ describe('ApiStudyFeatureController', () => {
   describe('getAllActiveStudies', () => {
     it('returns all active studies', async () => {
       expect.assertions(1);
-      const result = await controller.getAllStudies();
+      const result = await controller.getAllStudies({} as ParsedQueryModel);
       expect(result).toStrictEqual(prismaStudyMock.getActiveStudies());
     });
   });
