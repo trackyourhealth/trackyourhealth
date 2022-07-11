@@ -1,5 +1,6 @@
 export * from './lib/api-core-util.module';
 export * from './lib/builders/class';
+export * from './lib/builders/request/generate-data.request';
 export * from './lib/builders/response/generate-data.response';
 export * from './lib/builders/response/generate-data-array.response';
 export * from './lib/builders/response/generate-paginated-data.response';
