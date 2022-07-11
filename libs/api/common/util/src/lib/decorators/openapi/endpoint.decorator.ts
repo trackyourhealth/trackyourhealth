@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiConsumes,
   ApiExcludeEndpoint,
   ApiExtraModels,
@@ -25,6 +26,7 @@ import {
   Class,
   DataArrayOutput,
   DataOutput,
+  GenerateDataRequest,
   GenerateDataResponse,
   GeneratePaginatedDataResponse,
   PaginatedDataOutput,
@@ -46,6 +48,7 @@ export interface EndpointConfiguration {
     addPaginationQueryParams: boolean;
     // addSelectQueryParams: boolean;
     addSortQueryParams: boolean;
+    model?: Class;
   };
   response: {
     status: HttpStatus;
@@ -68,6 +71,7 @@ const defaultConfiguration: EndpointConfiguration = {
     queryParams: [],
     addPaginationQueryParams: false,
     addSortQueryParams: false,
+    model: undefined,
   },
   response: {
     status: HttpStatus.OK,
@@ -210,9 +214,8 @@ function addApiRequest(config: EndpointConfiguration) {
   }
   */
 
-  /*
   if (config.request.model) {
-    const baseRequestType = CreateDataRequest(config.request.model);
+    const baseRequestType = GenerateDataRequest(config.request.model);
 
     const apiBody = ApiBody({
       description: 'Data Input',
@@ -233,7 +236,6 @@ function addApiRequest(config: EndpointConfiguration) {
 
     extraModels.push(baseRequestType, config.request.model);
   }
-  */
 }
 
 function addApiResponse(config: EndpointConfiguration) {
