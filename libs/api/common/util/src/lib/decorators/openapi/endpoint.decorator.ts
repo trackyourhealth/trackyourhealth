@@ -18,8 +18,17 @@ import {
   ApiProduces,
   ApiQuery,
   ApiQueryOptions,
+  ApiResponse,
+  getSchemaPath,
 } from '@nestjs/swagger';
-import { Class } from '@trackyourhealth/api/core/util';
+import {
+  Class,
+  DataArrayOutput,
+  DataOutput,
+  GenerateDataResponse,
+  GeneratePaginatedDataResponse,
+  PaginatedDataOutput,
+} from '@trackyourhealth/api/core/util';
 import { KratosGuard } from '@trackyourhealth/api/kratos/util';
 import deepmerge = require('deepmerge');
 import { PartialDeep } from 'type-fest';
@@ -42,6 +51,7 @@ export interface EndpointConfiguration {
     status: HttpStatus;
     mimeTypes: string[];
     paginated: boolean;
+    model?: Class;
   };
   excludeFromDocs: boolean;
 }
@@ -63,6 +73,7 @@ const defaultConfiguration: EndpointConfiguration = {
     status: HttpStatus.OK,
     mimeTypes: ['application/json'],
     paginated: false,
+    model: undefined,
   },
   excludeFromDocs: false,
 };
@@ -236,11 +247,16 @@ function addApiResponse(config: EndpointConfiguration) {
     const apiTransformer = ApiTransformer(config.response.transformer);
     decoratorsToApply.push(apiTransformer);
   }
+  */
 
   if (config.response.model) {
-    let baseResponseType = CreateDataResponse(config.response.model);
+    let baseResponseType: Class<
+      DataOutput<never> | DataArrayOutput<never> | PaginatedDataOutput<never>
+    >;
+
+    baseResponseType = GenerateDataResponse(config.response.model);
     if (config.response.paginated) {
-      baseResponseType = CreatePaginatedDataResponse(config.response.model);
+      baseResponseType = GeneratePaginatedDataResponse(config.response.model);
     }
 
     const apiResponse = ApiResponse({
@@ -259,6 +275,7 @@ function addApiResponse(config: EndpointConfiguration) {
         ],
       },
     });
+
     decoratorsToApply.push(apiResponse);
     extraModels.push(baseResponseType, config.response.model);
   } else {
@@ -266,9 +283,9 @@ function addApiResponse(config: EndpointConfiguration) {
       status: config.response.status,
       description: 'The default Response',
     });
+
     decoratorsToApply.push(apiResponse);
   }
-  */
 }
 
 function addApiExtraModels() {
