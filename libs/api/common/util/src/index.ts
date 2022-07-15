@@ -3,6 +3,7 @@ export * from './lib/decorators/api-roles.decorator';
 export * from './lib/decorators/api-transformer.decorator';
 export * from './lib/decorators/openapi/endpoint.decorator';
 export * from './lib/decorators/request-parser.decorator';
+export * from './lib/decorators/uuid-param.decorator';
 export * from './lib/enums/roles.enum';
 export * from './lib/filters/http-exception.filter';
 export * from './lib/interceptors/data-transformer.interceptor';
