@@ -15,7 +15,7 @@ const defaultRequestQueryOptions: RequestQueryOptions = {
   pageDefaultValue: 1,
 
   orderParamName: 'sort',
-  orderDefaultValue: '-created_at',
+  orderDefaultValue: '-createdAt',
 
   selectParamName: 'filter',
 };
