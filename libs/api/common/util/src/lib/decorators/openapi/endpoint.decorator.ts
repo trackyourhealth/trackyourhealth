@@ -22,6 +22,7 @@ import {
   ApiResponse,
   getSchemaPath,
 } from '@nestjs/swagger';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import {
   Class,
   DataArrayOutput,
@@ -49,6 +50,7 @@ export interface EndpointConfiguration {
     // addSelectQueryParams: boolean;
     addSortQueryParams: boolean;
     model?: Class;
+    throttleRequest: boolean;
   };
   response: {
     status: HttpStatus;
@@ -72,6 +74,7 @@ const defaultConfiguration: EndpointConfiguration = {
     addPaginationQueryParams: false,
     addSortQueryParams: false,
     model: undefined,
+    throttleRequest: true,
   },
   response: {
     status: HttpStatus.OK,
@@ -90,7 +93,7 @@ let decoratorsToApply: (
 
 let extraModels: Class<any>[] = [];
 
-export const Endpoint = (options: PartialDeep<EndpointConfiguration>) => {
+export const Endpoint = (options: PartialDeep<EndpointConfiguration> = {}) => {
   const config = deepmerge(
     defaultConfiguration,
     options,
@@ -235,6 +238,11 @@ function addApiRequest(config: EndpointConfiguration) {
     decoratorsToApply.push(apiBody);
 
     extraModels.push(baseRequestType, config.request.model);
+  }
+
+  if (config.request.throttleRequest) {
+    const throttlerGuard = UseGuards(ThrottlerGuard);
+    decoratorsToApply.push(throttlerGuard);
   }
 }
 
