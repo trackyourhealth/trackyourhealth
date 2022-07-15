@@ -2,7 +2,7 @@ import { Prisma, Study } from '@prisma/client';
 
 const studies: Study[] = [
   {
-    id: '4321',
+    id: 'eabb4ea7-0ff9-47fc-bb5c-2d11d5273516',
     name: 'teststudy4321',
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -13,7 +13,7 @@ const studies: Study[] = [
     endsAt: new Date(),
   },
   {
-    id: '1234',
+    id: '89606099-b544-4c7c-a172-86951932a803',
     name: 'teststudy1234',
     createdAt: new Date(),
     updatedAt: new Date(),
