@@ -14,7 +14,7 @@ export class ApiStudyDataService {
      * StudyFindManyArgs: cursor, distinct, where
      */
     const options: Prisma.StudyFindManyArgs = {
-      select: parsedOptions?.select,
+      //select: select,
       orderBy: parsedOptions?.sort,
       take: parsedOptions?.take,
       skip: parsedOptions?.skip,
@@ -32,35 +32,41 @@ export class ApiStudyDataService {
     return this.prismaService.study.findUnique(whereId);
   }
 
-  async createStudies(input: Prisma.StudyCreateInput[]): Promise<Study[]> {
-    const promisedStudies: PromiseSettledResult<Study>[] =
-      await Promise.allSettled(
-        input.map((study) => this.prismaService.study.create({ data: study })),
-      );
-    return promisedStudies
-      .filter((promisedStudy) => promisedStudy.status === 'fulfilled')
-      .map(
-        (promisedStudy) =>
-          (promisedStudy as PromiseFulfilledResult<Study>).value,
-      );
-    /* const createdStudies = [];
-    for (const createStudy of input) {
-      try {
-        // const result: Prisma.BatchPayload = await this.prismaService.study.createMany({ data: [input], });
-        const study: Study = await this.prismaService.study.create({
-          data: createStudy,
-        });
-        createdStudies.push(study);
-      } catch (e: any) {
-        if (
-          e instanceof Prisma.PrismaClientKnownRequestError &&
-          e.code === 'P2002'
-        ) {
-          // uniques-constraint of variable violated
-        }
-        return null;
-      }
+  async createStudy(input: Prisma.StudyCreateInput): Promise<Study | null> {
+    try {
+      return await this.prismaService.study.create({ data: input });
+    } catch (e: unknown) {
+      return null;
     }
-    return createdStudies; */
+  }
+
+  async updateStudy(
+    studyId: string,
+    data: Prisma.StudyUpdateInput,
+  ): Promise<Study | null> {
+    const options = {
+      data: data,
+      where: {
+        id: studyId,
+      },
+    };
+    try {
+      return await this.prismaService.study.update(options);
+    } catch (e: unknown) {
+      return null;
+    }
+  }
+
+  async deleteStudy(studyId: string): Promise<Study | null> {
+    const options = {
+      where: {
+        id: studyId,
+      },
+    };
+    try {
+      return await this.prismaService.study.delete(options);
+    } catch (e: unknown) {
+      return null;
+    }
   }
 }
