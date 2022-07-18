@@ -56,6 +56,9 @@ const mockStudyPrisma = {
   study: {
     findMany: mockFindManyStudies,
     findUnique: mockFindUniqueStudy,
+    create: () => studies[0],
+    delete: () => studies[0],
+    update: () => studies[0],
   },
 };
 
