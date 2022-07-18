@@ -44,3 +44,6 @@ Thumbs.db
 
 # Todo
 /todo
+
+# automatically generated stuff
+.generated
