@@ -23,7 +23,14 @@ export class ApiStudyFeatureController {
   async getAllStudies(
     @RequestParser() parsedOptions: ParsedQueryModel,
   ): Promise<Study[]> {
-    return this.apiStudyDataService.getAllStudies(parsedOptions);
+    const result = await this.apiStudyDataService.getAllStudies(parsedOptions);
+    if (result == null) {
+      throw new HttpException(
+        'Connection to database failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+    return result;
   }
 
   @Get(':studyId')
