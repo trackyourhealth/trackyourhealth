@@ -42,6 +42,20 @@ export class ApiStudyFeatureController {
     return result;
   }
 
+  @Get('request/count')
+  async countStudies(
+    @RequestParser() parsedOptions: ParsedQueryModel,
+  ): Promise<number> {
+    const result = await this.apiStudyDataService.countStudies(parsedOptions);
+    if (result == null) {
+      throw new HttpException(
+        'Connection to database failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+    return result;
+  }
+
   @Post()
   async createStudy(
     @Body('study') studyInput: Prisma.StudyCreateInput,

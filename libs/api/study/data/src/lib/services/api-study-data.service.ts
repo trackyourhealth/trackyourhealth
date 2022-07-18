@@ -79,4 +79,21 @@ export class ApiStudyDataService {
       return null;
     }
   }
+
+  async countStudies(parsedOptions?: ParsedQueryModel): Promise<number | null> {
+    // If select is part of options, return type changes to type of select
+    const options = {
+      //select: { _all: true },
+      //orderBy: parsedOptions?.sort,
+      take: parsedOptions?.take,
+      skip: parsedOptions?.skip,
+      //where: {isActive: true,},
+      //cursor: undefined,
+    };
+    try {
+      return await this.prismaService.study.count(options);
+    } catch (e) {
+      return null;
+    }
+  }
 }
