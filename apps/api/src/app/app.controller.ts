@@ -2,7 +2,7 @@ import { Controller, Get, UseGuards } from '@nestjs/common';
 import {
   ParsedQueryModel,
   RequestParser,
-} from '@trackyourhealth/api/common/util';
+} from '@prisma-utils/nestjs-request-parser';
 import {
   KratosGuard,
   KratosSession,
@@ -16,7 +16,10 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  getData(@RequestParser() parsedRequest: ParsedQueryModel) {
+  getData(
+    @RequestParser({ orderDefaultValue: '-createdAt' })
+    parsedRequest: ParsedQueryModel,
+  ) {
     console.log(parsedRequest);
     return this.appService.getData();
   }

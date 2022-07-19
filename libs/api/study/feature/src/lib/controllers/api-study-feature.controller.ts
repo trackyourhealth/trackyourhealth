@@ -11,7 +11,7 @@ import { Prisma, Study } from '@prisma/client';
 import {
   ParsedQueryModel,
   RequestParser,
-} from '@trackyourhealth/api/common/util';
+} from '@prisma-utils/nestjs-request-parser';
 import { UUIDParam } from '@trackyourhealth/api/common/util';
 import { ApiStudyDataService } from '@trackyourhealth/api/study/data';
 
@@ -24,7 +24,7 @@ export class ApiStudyFeatureController {
     @RequestParser() parsedOptions: ParsedQueryModel,
   ): Promise<Study[]> {
     const result = await this.apiStudyDataService.getAll(parsedOptions);
-    if (result == null) {
+    if (result === null) {
       throw new HttpException(
         'Connection to database failed',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -36,7 +36,7 @@ export class ApiStudyFeatureController {
   @Get(':id')
   async getStudyById(@UUIDParam('id') id: string): Promise<Study> {
     const result = await this.apiStudyDataService.getById(id);
-    if (result == null) {
+    if (result === null) {
       throw new HttpException('No such study exists', HttpStatus.NOT_FOUND);
     }
     return result;
@@ -47,7 +47,7 @@ export class ApiStudyFeatureController {
     @Body('study') input: Prisma.StudyCreateInput,
   ): Promise<Study> {
     const result = await this.apiStudyDataService.createStudy(input);
-    if (result == null) {
+    if (result === null) {
       throw new HttpException('No such study exists', HttpStatus.NOT_FOUND);
     }
     return result;
@@ -59,7 +59,7 @@ export class ApiStudyFeatureController {
     @Body('study') input: Prisma.StudyUpdateInput,
   ): Promise<Study> {
     const result = await this.apiStudyDataService.updateStudy(id, input);
-    if (result == null) {
+    if (result === null) {
       throw new HttpException('No such study exists', HttpStatus.NOT_FOUND);
     }
     return result;
@@ -68,7 +68,7 @@ export class ApiStudyFeatureController {
   @Delete(':id')
   async deleteStudy(@UUIDParam('id') id: string): Promise<Study> {
     const result = await this.apiStudyDataService.deleteStudy(id);
-    if (result == null) {
+    if (result === null) {
       throw new HttpException('No such study exists', HttpStatus.NOT_FOUND);
     }
     return result;

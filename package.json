@@ -23,9 +23,6 @@
     "start": "nx serve",
     "test": "nx test"
   },
-  "prisma": {
-    "seed": "ts-node ./prisma/seed.ts"
-  },
   "dependencies": {
     "@nestjs/axios": "0.1.0",
     "@nestjs/class-transformer": "^0.4.0",
@@ -41,6 +38,7 @@
     "@nestjs/throttler": "^3.0.0",
     "@ory/kratos-client": "^0.10.1",
     "@prisma-utils/nestjs-prisma": "^1.8.1",
+    "@prisma-utils/nestjs-request-parser": "^1.1.0",
     "@prisma/client": "4.0.0",
     "deepmerge": "^4.2.2",
     "env-var": "^7.1.1",

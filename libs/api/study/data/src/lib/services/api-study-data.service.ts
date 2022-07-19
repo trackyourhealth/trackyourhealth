@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, Study } from '@prisma/client';
-import { ParsedQueryModel } from '@trackyourhealth/api/common/util';
+import { ParsedQueryModel } from '@prisma-utils/nestjs-request-parser';
 
 import { StudyCrudService } from './study.crud.service';
 
