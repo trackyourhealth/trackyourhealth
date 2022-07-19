@@ -23,7 +23,7 @@ export class ApiStudyFeatureController {
   async getAllStudies(
     @RequestParser() parsedOptions: ParsedQueryModel,
   ): Promise<Study[]> {
-    const result = await this.apiStudyDataService.getAllStudies(parsedOptions);
+    const result = await this.apiStudyDataService.getAll(parsedOptions);
     if (result == null) {
       throw new HttpException(
         'Connection to database failed',
@@ -33,58 +33,41 @@ export class ApiStudyFeatureController {
     return result;
   }
 
-  @Get(':studyId')
-  async getStudyById(@UUIDParam('studyId') studyId: string): Promise<Study> {
-    const result = await this.apiStudyDataService.getStudyById(studyId);
+  @Get(':id')
+  async getStudyById(@UUIDParam('id') id: string): Promise<Study> {
+    const result = await this.apiStudyDataService.getById(id);
     if (result == null) {
       throw new HttpException('No such study exists', HttpStatus.NOT_FOUND);
-    }
-    return result;
-  }
-
-  @Get('request/count')
-  async countStudies(
-    @RequestParser() parsedOptions: ParsedQueryModel,
-  ): Promise<number> {
-    const result = await this.apiStudyDataService.countStudies(parsedOptions);
-    if (result == null) {
-      throw new HttpException(
-        'Connection to database failed',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
     }
     return result;
   }
 
   @Post()
   async createStudy(
-    @Body('study') studyInput: Prisma.StudyCreateInput,
+    @Body('study') input: Prisma.StudyCreateInput,
   ): Promise<Study> {
-    const result = await this.apiStudyDataService.createStudy(studyInput);
+    const result = await this.apiStudyDataService.createStudy(input);
     if (result == null) {
       throw new HttpException('No such study exists', HttpStatus.NOT_FOUND);
     }
     return result;
   }
 
-  @Post(':studyId')
+  @Post(':id')
   async updateStudy(
-    @UUIDParam('studyId') studyId: string,
-    @Body('study') studyInput: Prisma.StudyUpdateInput,
+    @UUIDParam('id') id: string,
+    @Body('study') input: Prisma.StudyUpdateInput,
   ): Promise<Study> {
-    const result = await this.apiStudyDataService.updateStudy(
-      studyId,
-      studyInput,
-    );
+    const result = await this.apiStudyDataService.updateStudy(id, input);
     if (result == null) {
       throw new HttpException('No such study exists', HttpStatus.NOT_FOUND);
     }
     return result;
   }
 
-  @Delete(':studyId')
-  async deleteStudy(@UUIDParam('studyId') studyId: string): Promise<Study> {
-    const result = await this.apiStudyDataService.deleteStudy(studyId);
+  @Delete(':id')
+  async deleteStudy(@UUIDParam('id') id: string): Promise<Study> {
+    const result = await this.apiStudyDataService.deleteStudy(id);
     if (result == null) {
       throw new HttpException('No such study exists', HttpStatus.NOT_FOUND);
     }
