@@ -12,20 +12,10 @@ generator client {
   binaryTargets = ["native", "linux-musl"]
 }
 
-// generator NestDTOs {
-//   provider                        = "prisma-generator-nestjs-dto"
-//   // output                          = "../src/generated/nestjs-dto"
-//   output                          = "./../libs/api/studies/src/lib/prisma/generated/dtos"
-//   outputToNestJsResourceStructure = "false"
-//   exportRelationModifierClasses   = "true"
-//   reExport                        = "false"
-//   createDtoPrefix                 = "Create"
-//   updateDtoPrefix                 = "Update"
-//   dtoSuffix                       = "Dto"
-//   entityPrefix                    = ""
-//   entitySuffix                    = ""
-//   fileNamingStyle                 = "camel"
-// }
+generator crud {
+  provider = "prisma-crud-generator"
+  output   = "./../libs/api/#{model}/data/src/lib"
+}
 
 datasource db {
   provider = "postgresql"
