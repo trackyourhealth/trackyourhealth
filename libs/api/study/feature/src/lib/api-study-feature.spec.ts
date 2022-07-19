@@ -1,6 +1,7 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { PrismaService } from '@prisma-utils/nestjs-prisma';
+import { ApiStudyDataModule } from '@trackyourhealth/api/study/data';
 import { prismaStudyMock } from '@trackyourhealth/api/testing/util';
 import * as request from 'supertest';
 
@@ -12,7 +13,7 @@ describe('ApiStudyFeature', () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [ApiStudyFeatureModule],
+      imports: [ApiStudyFeatureModule, ApiStudyDataModule],
     })
       .overrideProvider(PrismaService)
       .useValue(prismaStudyMock.service)
