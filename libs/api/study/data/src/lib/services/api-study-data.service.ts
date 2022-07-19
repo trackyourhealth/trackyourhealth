@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, Study } from '@prisma/client';
-import { PrismaService } from '@prisma-utils/nestjs-prisma';
 import { ParsedQueryModel } from '@trackyourhealth/api/common/util';
+
+import { StudyCrudService } from './study.crud.service';
 
 @Injectable()
 export class ApiStudyDataService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly crudService: StudyCrudService) {}
 
-  async getAllStudies(
-    parsedOptions?: ParsedQueryModel,
-  ): Promise<Study[] | null> {
+  async getAll(parsedOptions?: ParsedQueryModel): Promise<Study[] | null> {
     const options: Prisma.StudyFindManyArgs = {
       orderBy: parsedOptions?.sort,
       take: parsedOptions?.take,
@@ -19,69 +18,54 @@ export class ApiStudyDataService {
       },
     };
     try {
-      return await this.prismaService.study.findMany(options);
+      return await this.crudService.getAll(options);
     } catch (e) {
       return null;
     }
   }
 
-  async getStudyById(studyId: string): Promise<Study | null> {
-    const whereId: Prisma.StudyFindUniqueArgs = {
-      where: { id: studyId },
-    };
+  async getById(id: string): Promise<Study | null> {
     try {
-      return await this.prismaService.study.findUnique(whereId);
+      return await this.crudService.getById(id);
     } catch (e) {
       return null;
     }
   }
 
   async createStudy(input: Prisma.StudyCreateInput): Promise<Study | null> {
+    const data = input;
+
     try {
-      return await this.prismaService.study.create({ data: input });
+      return await this.crudService.create(data);
     } catch (e: unknown) {
       return null;
     }
   }
 
   async updateStudy(
-    studyId: string,
-    data: Prisma.StudyUpdateInput,
+    id: string,
+    input: Prisma.StudyUpdateInput,
   ): Promise<Study | null> {
-    const options = {
-      data: data,
-      where: {
-        id: studyId,
-      },
-    };
+    const data = input;
+
     try {
-      return await this.prismaService.study.update(options);
+      return await this.crudService.update(id, data);
     } catch (e: unknown) {
       return null;
     }
   }
 
-  async deleteStudy(studyId: string): Promise<Study | null> {
-    const options = {
-      where: {
-        id: studyId,
-      },
-    };
+  async deleteStudy(id: string): Promise<Study | null> {
     try {
-      return await this.prismaService.study.delete(options);
+      return await this.crudService.delete(id);
     } catch (e: unknown) {
       return null;
     }
   }
 
-  async countStudies(parsedOptions?: ParsedQueryModel): Promise<number | null> {
-    // If select is part of options, return type changes to type of select
-    const options = {
-      take: parsedOptions?.take,
-      skip: parsedOptions?.skip,
-    };
+  async count(): Promise<number | null> {
     try {
-      return await this.prismaService.study.count(options);
+      return await this.crudService.count({ where: { isActive: true } });
     } catch (e) {
       return null;
     }
