@@ -4,7 +4,6 @@ import { PrismaService } from '@prisma-utils/nestjs-prisma';
 import { prismaStudyMock } from '@trackyourhealth/api/testing/util';
 import * as request from 'supertest';
 
-import { apiStudyFeature } from './api-study-feature';
 import { ApiStudyFeatureModule } from './api-study-feature.module';
 
 describe('ApiStudyFeature', () => {
@@ -21,10 +20,6 @@ describe('ApiStudyFeature', () => {
 
     app = module.createNestApplication();
     await app.init();
-  });
-
-  it('should work', () => {
-    expect(apiStudyFeature()).toEqual('api-study-feature');
   });
 
   it('/GET studies', async () => {
