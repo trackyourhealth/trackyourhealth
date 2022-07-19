@@ -5,6 +5,52 @@
     "api-common-util": "libs/api/common/util",
     "api-core-util": "libs/api/core/util",
     "api-health-feature": "libs/api/health/feature",
+    "api-instrument-data": {
+      "root": "libs/api/instrument/data",
+      "sourceRoot": "libs/api/instrument/data/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/api/instrument/data/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/api/instrument/data"],
+          "options": {
+            "jestConfig": "libs/api/instrument/data/jest.config.ts",
+            "passWithNoTests": true
+          }
+        }
+      },
+      "tags": []
+    },
+    "api-instrument-feature": {
+      "root": "libs/api/instrument/feature",
+      "sourceRoot": "libs/api/instrument/feature/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/api/instrument/feature/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/api/instrument/feature"],
+          "options": {
+            "jestConfig": "libs/api/instrument/feature/jest.config.ts",
+            "passWithNoTests": true
+          }
+        }
+      },
+      "tags": []
+    },
     "api-kratos-util": "libs/api/kratos/util",
     "api-study-data": {
       "root": "libs/api/study/data",

@@ -20,6 +20,12 @@
       "@trackyourhealth/api/health/feature": [
         "libs/api/health/feature/src/index.ts"
       ],
+      "@trackyourhealth/api/instrument/data": [
+        "libs/api/instrument/data/src/index.ts"
+      ],
+      "@trackyourhealth/api/instrument/feature": [
+        "libs/api/instrument/feature/src/index.ts"
+      ],
       "@trackyourhealth/api/kratos/util": ["libs/api/kratos/util/src/index.ts"],
       "@trackyourhealth/api/study/data": ["libs/api/study/data/src/index.ts"],
       "@trackyourhealth/api/study/feature": [
