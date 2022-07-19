@@ -2,7 +2,10 @@ import { Test } from '@nestjs/testing';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '@prisma-utils/nestjs-prisma';
 import { ParsedQueryModel } from '@trackyourhealth/api/common/util';
-import { ApiStudyDataService } from '@trackyourhealth/api/study/data';
+import {
+  ApiStudyDataService,
+  StudyCrudService,
+} from '@trackyourhealth/api/study/data';
 import { prismaStudyMock } from '@trackyourhealth/api/testing/util';
 
 import { ApiStudyFeatureController } from './api-study-feature.controller';
@@ -23,7 +26,7 @@ describe('ApiStudyFeatureController', () => {
     mockUpdate.mockClear();
 
     const module = await Test.createTestingModule({
-      providers: [ApiStudyDataService, PrismaService],
+      providers: [ApiStudyDataService, StudyCrudService, PrismaService],
       controllers: [ApiStudyFeatureController],
     })
       .overrideProvider(PrismaService)
@@ -45,8 +48,8 @@ describe('ApiStudyFeatureController', () => {
     });
   });
 
-  describe('getStudyById', () => {
-    it('returns study on valid studyId', async () => {
+  describe('getById', () => {
+    it('returns entity with valid id', async () => {
       expect.assertions(1);
       const expectedStudy = prismaStudyMock.getFirstStudy();
       return controller
