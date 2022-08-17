@@ -6,31 +6,22 @@ import {
   ApiStudyDataService,
   StudyCrudService,
 } from '@trackyourhealth/api/study/data';
-import { prismaStudyMock } from '@trackyourhealth/api/testing/util';
+import { studies, studyCrudMock } from '@trackyourhealth/api/testing/util';
 
 import { ApiStudyFeatureController } from './api-study-feature.controller';
-
-const mockCreate = jest.fn();
-const mockDelete = jest.fn();
-const mockUpdate = jest.fn();
 
 describe('ApiStudyFeatureController', () => {
   let controller: ApiStudyFeatureController;
 
   beforeEach(async () => {
-    prismaStudyMock.service.study.create = mockCreate;
-    prismaStudyMock.service.study.delete = mockDelete;
-    prismaStudyMock.service.study.update = mockUpdate;
-    mockCreate.mockClear();
-    mockDelete.mockClear();
-    mockUpdate.mockClear();
+    studyCrudMock.clearMocks();
 
     const module = await Test.createTestingModule({
       providers: [ApiStudyDataService, StudyCrudService, PrismaService],
       controllers: [ApiStudyFeatureController],
     })
       .overrideProvider(PrismaService)
-      .useValue(prismaStudyMock.service)
+      .useValue(studyCrudMock.service)
       .compile();
 
     controller = module.get(ApiStudyFeatureController);
@@ -42,46 +33,88 @@ describe('ApiStudyFeatureController', () => {
 
   describe('getAllStudies', () => {
     it('returns all active studies', async () => {
-      expect.assertions(1);
+      studyCrudMock.findMany.mockResolvedValueOnce(studies);
+      expect.assertions(3);
       const result = await controller.getAllStudies({} as ParsedQueryModel);
-      expect(result).toStrictEqual(prismaStudyMock.getActiveStudies());
+      expect(result).toStrictEqual(studies);
+      expect(studyCrudMock.findMany).toBeCalledTimes(1);
+      expect(studyCrudMock.findMany).toBeCalledWith({
+        where: { isActive: true },
+      });
+    });
+
+    it('throws HttpException on error from database', async () => {
+      studyCrudMock.findMany.mockRejectedValueOnce(new Error());
+      expect.assertions(4);
+      await controller.getAllStudies({} as ParsedQueryModel).catch((e) => {
+        expect(e.status).toStrictEqual(500);
+        expect(e.name).toStrictEqual('HttpException');
+      });
+      expect(studyCrudMock.findMany).toBeCalledTimes(1);
+      expect(studyCrudMock.findMany).toBeCalledWith({
+        where: { isActive: true },
+      });
     });
   });
 
   describe('getById', () => {
     it('returns entity with valid id', async () => {
-      expect.assertions(1);
-      const expectedStudy = prismaStudyMock.getFirstStudy();
-      return controller
-        .getStudyById(expectedStudy.id)
-        .then((study) => expect(study).toStrictEqual(expectedStudy));
+      const expectedStudy = studies[0];
+      studyCrudMock.findUnique.mockResolvedValueOnce(expectedStudy);
+      expect.assertions(3);
+      const result = await controller.getStudyById(expectedStudy.id);
+      expect(result).toStrictEqual(expectedStudy);
+      expect(studyCrudMock.findUnique).toBeCalledTimes(1);
+      expect(studyCrudMock.findUnique).toBeCalledWith({
+        where: { id: expectedStudy.id },
+      });
+    });
+
+    it('throws HttpException on error from database', async () => {
+      studyCrudMock.findUnique.mockRejectedValueOnce(new Error());
+      expect.assertions(4);
+      const ignoredId = 'ignored id';
+      await controller.getStudyById(ignoredId).catch((e) => {
+        expect(e.status).toStrictEqual(404);
+        expect(e.name).toStrictEqual('HttpException');
+      });
+      expect(studyCrudMock.findUnique).toBeCalledTimes(1);
+      expect(studyCrudMock.findUnique).toBeCalledWith({
+        where: { id: ignoredId },
+      });
     });
 
     it('throws HttpException on invalid studyId', async () => {
-      expect.assertions(1);
+      studyCrudMock.findUnique.mockRejectedValueOnce(new Error());
+      expect.assertions(4);
       const invalidStudyId = 'invalid and not used studyId';
-      return controller
-        .getStudyById(invalidStudyId)
-        .catch((e) => expect(e.name).toStrictEqual('HttpException'));
+      await controller.getStudyById(invalidStudyId).catch((e) => {
+        expect(e.status).toStrictEqual(404);
+        expect(e.name).toStrictEqual('HttpException');
+      });
+      expect(studyCrudMock.findUnique).toBeCalledTimes(1);
+      expect(studyCrudMock.findUnique).toBeCalledWith({
+        where: { id: invalidStudyId },
+      });
     });
   });
 
   describe('createStudy', () => {
     it('returns valid study', async () => {
-      const expectedStudy = prismaStudyMock.getFirstStudy();
-      mockCreate.mockResolvedValueOnce(expectedStudy);
+      const expectedStudy = studies[0];
+      studyCrudMock.create.mockResolvedValueOnce(expectedStudy);
       expect.assertions(3);
       const input: Prisma.StudyCreateInput = {
         name: 'a study',
       };
       const result = await controller.createStudy(input);
       expect(result).toStrictEqual(expectedStudy);
-      expect(mockCreate).toBeCalledTimes(1);
-      expect(mockCreate).toHaveBeenCalledWith({ data: input });
+      expect(studyCrudMock.create).toBeCalledTimes(1);
+      expect(studyCrudMock.create).toHaveBeenCalledWith({ data: input });
     });
 
     it('throws HttpException on invalid studyId', async () => {
-      mockCreate.mockRejectedValueOnce(new Error());
+      studyCrudMock.create.mockRejectedValueOnce(new Error());
       expect.assertions(4);
       const input: Prisma.StudyCreateInput = {
         name: 'invalid id',
@@ -90,40 +123,44 @@ describe('ApiStudyFeatureController', () => {
         expect(e.status).toStrictEqual(404);
         expect(e.name).toStrictEqual('HttpException');
       });
-      expect(mockCreate).toBeCalledTimes(1);
-      expect(mockCreate).toHaveBeenCalledWith({ data: input });
+      expect(studyCrudMock.create).toBeCalledTimes(1);
+      expect(studyCrudMock.create).toHaveBeenCalledWith({ data: input });
     });
   });
 
   describe('deleteStudy', () => {
     it('returns valid study', async () => {
-      const expectedStudy = prismaStudyMock.getFirstStudy();
-      mockDelete.mockResolvedValueOnce(expectedStudy);
+      const expectedStudy = studies[1];
+      studyCrudMock.delete.mockResolvedValueOnce(expectedStudy);
       expect.assertions(3);
       const studyId = expectedStudy.id;
       const result = await controller.deleteStudy(studyId);
       expect(result).toStrictEqual(expectedStudy);
-      expect(mockDelete).toBeCalledTimes(1);
-      expect(mockDelete).toHaveBeenCalledWith({ where: { id: studyId } });
+      expect(studyCrudMock.delete).toBeCalledTimes(1);
+      expect(studyCrudMock.delete).toHaveBeenCalledWith({
+        where: { id: studyId },
+      });
     });
 
     it('throws HttpException on invalid studyId', async () => {
-      mockDelete.mockRejectedValueOnce(new Error());
+      studyCrudMock.delete.mockRejectedValueOnce(new Error());
       expect.assertions(4);
       const studyId = 'invalid id';
       await controller.deleteStudy(studyId).catch((e) => {
         expect(e.status).toStrictEqual(404);
         expect(e.name).toStrictEqual('HttpException');
       });
-      expect(mockDelete).toBeCalledTimes(1);
-      expect(mockDelete).toHaveBeenCalledWith({ where: { id: studyId } });
+      expect(studyCrudMock.delete).toBeCalledTimes(1);
+      expect(studyCrudMock.delete).toHaveBeenCalledWith({
+        where: { id: studyId },
+      });
     });
   });
 
   describe('updateStudy', () => {
     it('returns valid study', async () => {
-      const expectedStudy = prismaStudyMock.getFirstStudy();
-      mockUpdate.mockResolvedValueOnce(expectedStudy);
+      const expectedStudy = studies[1];
+      studyCrudMock.update.mockResolvedValueOnce(expectedStudy);
       expect.assertions(3);
       const studyId = expectedStudy.id;
       const input: Prisma.StudyUpdateInput = {
@@ -131,15 +168,15 @@ describe('ApiStudyFeatureController', () => {
       };
       const result = await controller.updateStudy(studyId, input);
       expect(result).toStrictEqual(expectedStudy);
-      expect(mockUpdate).toBeCalledTimes(1);
-      expect(mockUpdate).toHaveBeenCalledWith({
+      expect(studyCrudMock.update).toBeCalledTimes(1);
+      expect(studyCrudMock.update).toHaveBeenCalledWith({
         data: input,
         where: { id: studyId },
       });
     });
 
     it('throws HttpException on invalid studyId', async () => {
-      mockUpdate.mockRejectedValueOnce(new Error());
+      studyCrudMock.update.mockRejectedValueOnce(new Error());
       expect.assertions(4);
       const studyId = 'invalid id';
       const input: Prisma.StudyUpdateInput = {
@@ -149,8 +186,8 @@ describe('ApiStudyFeatureController', () => {
         expect(e.status).toStrictEqual(404);
         expect(e.name).toStrictEqual('HttpException');
       });
-      expect(mockUpdate).toBeCalledTimes(1);
-      expect(mockUpdate).toHaveBeenCalledWith({
+      expect(studyCrudMock.update).toBeCalledTimes(1);
+      expect(studyCrudMock.update).toHaveBeenCalledWith({
         data: input,
         where: { id: studyId },
       });
