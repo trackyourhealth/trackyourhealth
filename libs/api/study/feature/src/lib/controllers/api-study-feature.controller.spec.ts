@@ -6,7 +6,11 @@ import {
   ApiStudyDataService,
   StudyCrudService,
 } from '@trackyourhealth/api/study/data';
-import { studies, studyCrudMock } from '@trackyourhealth/api/testing/util';
+import {
+  dbConnectionError,
+  studies,
+  studyCrudMock,
+} from '@trackyourhealth/api/testing/util';
 
 import { ApiStudyFeatureController } from './api-study-feature.controller';
 
@@ -191,6 +195,31 @@ describe('ApiStudyFeatureController', () => {
         data: input,
         where: { id: studyId },
       });
+    });
+  });
+
+  describe('getStudyCount', () => {
+    it('throws HttpException on unavailable db connection', async () => {
+      studyCrudMock.count.mockRejectedValueOnce(dbConnectionError);
+      expect.assertions(4);
+      await controller.getStudyCount().catch((e) => {
+        expect(e.status).toStrictEqual(500);
+        expect(e.name).toStrictEqual('HttpException');
+      });
+      expect(studyCrudMock.count).toBeCalledTimes(1);
+      expect(studyCrudMock.count).toHaveBeenCalledWith({
+        where: { isActive: true },
+      });
+    });
+
+    it('returns study count', async () => {
+      const studyCount = 13;
+      studyCrudMock.count.mockResolvedValueOnce(studyCount);
+      expect.assertions(3);
+      const result = await controller.getStudyCount();
+      expect(result).toStrictEqual({ count: studyCount });
+      expect(studyCrudMock.count).toBeCalledTimes(1);
+      expect(studyCrudMock.count).toBeCalledWith({ where: { isActive: true } });
     });
   });
 });

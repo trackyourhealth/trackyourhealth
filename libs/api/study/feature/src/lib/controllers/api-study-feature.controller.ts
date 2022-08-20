@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
   HttpStatus,
   Patch,
   Post,
@@ -81,6 +82,19 @@ export class ApiStudyFeatureController {
 
     const result = await this.apiStudyDataService.createStudy(dto);
     return result;
+  }
+
+  // TODO: refactor paths
+  @Get('count/active')
+  async getStudyCount(): Promise<{ count: number }> {
+    const result = await this.apiStudyDataService.countStudies();
+    if (result === null) {
+      throw new HttpException(
+        'Connection to database failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+    return { count: result };
   }
 
   @Endpoint({

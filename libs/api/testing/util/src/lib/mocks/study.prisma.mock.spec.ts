@@ -5,6 +5,7 @@ const serviceMock = {
     findMany: jest.fn(),
     findUnique: jest.fn(),
     update: jest.fn(),
+    count: jest.fn(),
   },
 };
 
@@ -14,6 +15,7 @@ const clearMocks = () => {
   serviceMock.study.findMany.mockClear();
   serviceMock.study.findUnique.mockClear();
   serviceMock.study.update.mockClear();
+  serviceMock.study.count.mockClear();
 };
 
 export const studyCrudMock = {
@@ -24,4 +26,5 @@ export const studyCrudMock = {
   findMany: serviceMock.study.findMany,
   findUnique: serviceMock.study.findUnique,
   update: serviceMock.study.update,
+  count: serviceMock.study.count,
 };
