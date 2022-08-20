@@ -46,4 +46,11 @@ export class ApiStudyDataService {
     const result = await this.crudService.delete(id);
     return result;
   }
+  async countStudies(): Promise<number | null> {
+    try {
+      return await this.crudService.count({ where: { isActive: true } });
+    } catch (e) {
+      return null;
+    }
+  }
 }

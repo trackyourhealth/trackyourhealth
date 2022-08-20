@@ -227,10 +227,30 @@ describe('ApiStudyFeature', () => {
       expect(response.body).toStrictEqual(expectedStudy);
       expect(studyCrudMock.delete).toBeCalledTimes(1);
       expect(studyCrudMock.delete).toBeCalledWith({
-        where: {
-          id: expectedStudy.id,
-        },
+        where: { id: expectedStudy.id },
       });
+    });
+  });
+
+  describe('GET /studies/count/active', () => {
+    const address = `${baseRoute}/count/active`;
+
+    it('returns Internal Server Error on missing database connection', async () => {
+      studyCrudMock.count.mockRejectedValueOnce(dbConnectionError);
+      expect.assertions(1);
+      const response = await request(app.getHttpServer()).get(address);
+      expect(response.status).toStrictEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+    });
+
+    it('returns count', async () => {
+      const studyCount = 712;
+      studyCrudMock.count.mockResolvedValueOnce(studyCount);
+      expect.assertions(4);
+      const response = await request(app.getHttpServer()).get(address);
+      expect(response.status).toStrictEqual(HttpStatus.OK);
+      expect(response.body).toStrictEqual({ count: studyCount });
+      expect(studyCrudMock.count).toBeCalledTimes(1);
+      expect(studyCrudMock.count).toBeCalledWith({ where: { isActive: true } });
     });
   });
 
