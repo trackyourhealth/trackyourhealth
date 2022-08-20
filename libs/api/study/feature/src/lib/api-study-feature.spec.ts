@@ -68,6 +68,31 @@ describe('ApiStudyFeature', () => {
         },
       });
     });
+
+    it('parses additional request parameters', async () => {
+      studyCrudMock.findMany.mockResolvedValueOnce(studies);
+      expect.assertions(4 + studies.length);
+      const limit = 17;
+      const page = 4;
+      const address = `${baseRoute}/?limit=${limit}&page=${page}&sort=-id,createdAt`;
+      const response = await request(app.getHttpServer()).get(address);
+      expect(response.status).toStrictEqual(HttpStatus.OK);
+      const actualStudies = response.body;
+      expect(actualStudies.length).toStrictEqual(studies.length);
+      for (let i = 0; i < studies.length; i++) {
+        const expectedStudy = getStudyDateStringified(studies[i]);
+        expect(actualStudies[i]).toStrictEqual(expectedStudy);
+      }
+      expect(studyCrudMock.findMany).toBeCalledTimes(1);
+      expect(studyCrudMock.findMany).toBeCalledWith({
+        orderBy: [{ id: 'desc' }, { createdAt: 'asc' }],
+        take: limit,
+        skip: limit * (page - 1),
+        where: {
+          isActive: true,
+        },
+      });
+    });
   });
 
   describe('GET /studies/id', () => {
