@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '@prisma-utils/nestjs-prisma';
-import { ParsedQueryModel } from '@trackyourhealth/api/common/util';
+import { ParsedQueryModel } from '@prisma-utils/nestjs-request-parser';
 import {
   ApiStudyDataService,
   StudyCrudService,

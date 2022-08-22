@@ -21,7 +21,6 @@ describe('AppController', () => {
       expect(
         appController.getData({
           page: 1,
-          select: {},
           skip: 0,
           sort: [],
           take: 20,
