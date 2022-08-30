@@ -28,3 +28,9 @@ export const studyCrudMock = {
   update: serviceMock.study.update,
   count: serviceMock.study.count,
 };
+
+describe('StudyPrismaMock', () => {
+  it('is defined', () => {
+    expect(studyCrudMock).toBeDefined();
+  });
+});
