@@ -26,6 +26,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         path: request.url,
         request: {
           headers: request.headers,
+          body: request.body,
           params: request.params,
           path: request.path,
           query: request.query,
