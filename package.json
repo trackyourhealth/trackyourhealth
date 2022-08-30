@@ -41,7 +41,7 @@
     "@nestjs/terminus": "9.1.1",
     "@nestjs/throttler": "3.0.0",
     "@ory/kratos-client": "^0.10.1",
-    "@prisma-utils/nestjs-prisma": "^1.8.1",
+    "@prisma-utils/nestjs-prisma": "^1.9.0",
     "@prisma-utils/nestjs-request-parser": "^1.1.0",
     "@prisma/client": "4.2.1",
     "deepmerge": "^4.2.2",
