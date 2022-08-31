@@ -34,8 +34,9 @@ async function bootstrap() {
       skipUndefinedProperties: false,
       forbidNonWhitelisted: true,
       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      validatorPackage: require('@nestjs/class-validator'),
-      transformerPackage: require('@nestjs/class-transformer'),
+      // disable the use of @nestjs packages here for now, otherwise mapped-types does not work properly
+      // validatorPackage: require('@nestjs/class-validator'),
+      // transformerPackage: require('@nestjs/class-transformer'),
       exceptionFactory: (errors) =>
         new UnprocessableEntityException({
           title: 'Validation Exception',

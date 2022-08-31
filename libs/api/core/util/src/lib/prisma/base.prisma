@@ -8,7 +8,14 @@ generator client {
 
 generator crud {
   provider = "prisma-crud-generator"
-  output = "./libs/api/#{model}/data/src/lib"
+  output = "./../libs/api/#{model}/data/src/lib"
+  dryRun = false
+  strict = true
+
+  GenerateServices = true
+
+  GenerateInputs = true
+  InputValidatorPackage = "@nestjs/class-validator"
 }
 
 datasource db {
