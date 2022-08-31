@@ -1,3 +1,6 @@
+///@Omit()
 id String @id @default(uuid())
+///@Omit()
 createdAt DateTime @default(now())
+///@Omit()
 updatedAt DateTime @updatedAt
