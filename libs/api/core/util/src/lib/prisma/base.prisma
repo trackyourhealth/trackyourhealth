@@ -15,7 +15,7 @@ generator crud {
   GenerateServices = true
 
   GenerateInputs = true
-  InputValidatorPackage = "@nestjs/class-validator"
+  InputValidatorPackage = "class-validator"
 }
 
 datasource db {

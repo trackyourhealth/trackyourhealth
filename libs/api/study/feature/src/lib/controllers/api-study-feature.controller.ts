@@ -3,74 +3,125 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
   HttpStatus,
+  Patch,
   Post,
 } from '@nestjs/common';
-import { Prisma, Study } from '@prisma/client';
 import {
   ParsedQueryModel,
   RequestParser,
 } from '@prisma-utils/nestjs-request-parser';
-import { UUIDParam } from '@trackyourhealth/api/common/util';
-import { ApiStudyDataService } from '@trackyourhealth/api/study/data';
+import { Endpoint, UUIDParam } from '@trackyourhealth/api/common/util';
+import {
+  ApiStudyDataService,
+  CreateStudyDto,
+  CreateStudyInput,
+  UpdateStudyDto,
+  UpdateStudyInput,
+} from '@trackyourhealth/api/study/data';
+
+import { CreateStudyRequest, UpdateStudyRequest } from '../data/requests';
 
 @Controller('studies')
 export class ApiStudyFeatureController {
   constructor(private readonly apiStudyDataService: ApiStudyDataService) {}
 
+  @Endpoint({
+    meta: {
+      summary: 'Get Studies',
+      description:
+        'Returns all `Study` items that match specific filter conditions',
+    },
+    request: {
+      addPaginationQueryParams: true,
+      addSortQueryParams: true,
+    },
+  })
   @Get()
-  async getAllStudies(
-    @RequestParser() parsedOptions: ParsedQueryModel,
-  ): Promise<Study[]> {
+  async getAllStudies(@RequestParser() parsedOptions: ParsedQueryModel) {
     const result = await this.apiStudyDataService.getAll(parsedOptions);
-    if (result === null) {
-      throw new HttpException(
-        'Connection to database failed',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
     return result;
   }
 
+  @Endpoint({
+    meta: {
+      summary: 'Get Study',
+      description: 'Returns one `Study` by ID',
+    },
+    request: {},
+  })
   @Get(':id')
-  async getStudyById(@UUIDParam('id') id: string): Promise<Study> {
+  async getStudyById(@UUIDParam('id') id: string) {
     const result = await this.apiStudyDataService.getById(id);
-    if (result === null) {
-      throw new HttpException('No such study exists', HttpStatus.NOT_FOUND);
-    }
     return result;
   }
 
+  @Endpoint({
+    meta: {
+      summary: 'Create new Study',
+      description: 'Creates a new `Study`',
+    },
+    request: {
+      model: CreateStudyInput,
+    },
+    response: {
+      status: HttpStatus.CREATED,
+    },
+  })
   @Post()
-  async createStudy(
-    @Body('study') input: Prisma.StudyCreateInput,
-  ): Promise<Study> {
-    const result = await this.apiStudyDataService.createStudy(input);
-    if (result === null) {
-      throw new HttpException('No such study exists', HttpStatus.NOT_FOUND);
-    }
+  async createStudy(@Body() input: CreateStudyRequest) {
+    const dto: CreateStudyDto = {
+      name: input.data.name,
+      title: input.data.title,
+      description: input.data.description,
+      isActive: input.data.isActive,
+      startsAt: new Date(input.data.startsAt),
+      endsAt: input.data.endsAt ? new Date(input.data.endsAt) : undefined,
+    };
+
+    const result = await this.apiStudyDataService.createStudy(dto);
     return result;
   }
 
-  @Post(':id')
+  @Endpoint({
+    meta: {
+      summary: 'Update Study',
+      description: 'Update an existing `Study` by ID',
+    },
+    request: {
+      model: UpdateStudyInput,
+    },
+  })
+  @Patch(':id')
   async updateStudy(
     @UUIDParam('id') id: string,
-    @Body('study') input: Prisma.StudyUpdateInput,
-  ): Promise<Study> {
-    const result = await this.apiStudyDataService.updateStudy(id, input);
-    if (result === null) {
-      throw new HttpException('No such study exists', HttpStatus.NOT_FOUND);
-    }
+    @Body() input: UpdateStudyRequest,
+  ) {
+    const dto: UpdateStudyDto = {
+      name: input.data.name,
+      title: input.data.title,
+      description: input.data.description,
+      isActive: input.data.isActive,
+      startsAt: input.data.startsAt ? new Date(input.data.startsAt) : undefined,
+      endsAt: input.data.endsAt ? new Date(input.data.endsAt) : undefined,
+    };
+
+    const result = await this.apiStudyDataService.updateStudy(id, dto);
     return result;
   }
 
+  @Endpoint({
+    meta: {
+      summary: 'Delete Study',
+      description: 'Delete a `Study` by ID',
+    },
+    response: {
+      status: 204,
+    },
+  })
   @Delete(':id')
-  async deleteStudy(@UUIDParam('id') id: string): Promise<Study> {
+  async deleteStudy(@UUIDParam('id') id: string) {
     const result = await this.apiStudyDataService.deleteStudy(id);
-    if (result === null) {
-      throw new HttpException('No such study exists', HttpStatus.NOT_FOUND);
-    }
     return result;
   }
 }
