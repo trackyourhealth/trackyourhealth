@@ -4,7 +4,11 @@ THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 -----------------------------------------------------
 */
 
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma, Study } from '@prisma/client';
 import {
   PaginationInterface,
@@ -38,11 +42,15 @@ export class StudyCrudService {
     };
   }
 
-  async getById(id: string): Promise<Study | null> {
-    const result = await this.prismaService.study.findUnique({
-      where: { id: id },
-    });
-    return result;
+  async getById(id: string): Promise<Study> {
+    try {
+      const result = await this.prismaService.study.findUniqueOrThrow({
+        where: { id: id },
+      });
+      return result;
+    } catch (e) {
+      throw new NotFoundException(`Study Resource ${id} was not found.`);
+    }
   }
 
   async create(data: Prisma.StudyCreateInput): Promise<Study> {
@@ -50,7 +58,7 @@ export class StudyCrudService {
       const result = await this.prismaService.study.create({ data: data });
       return result;
     } catch (e) {
-      throw new InternalServerErrorException(`Could not create Study Model`);
+      throw new InternalServerErrorException(`Could not create Study Resource`);
     }
   }
 
@@ -62,7 +70,7 @@ export class StudyCrudService {
       });
     } catch (e) {
       throw new InternalServerErrorException(
-        `Could not update Study Model ${id}`,
+        `Could not update Study Resource ${id}`,
       );
     }
   }
