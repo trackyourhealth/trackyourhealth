@@ -15,6 +15,13 @@ generator client {
 generator crud {
   provider = "prisma-crud-generator"
   output   = "./../libs/api/#{model}/data/src/lib"
+  dryRun   = false
+  strict   = true
+
+  GenerateServices = true
+
+  GenerateInputs        = true
+  InputValidatorPackage = "class-validator"
 }
 
 datasource db {
@@ -23,18 +30,26 @@ datasource db {
 }
 
 model Study {
+  ///@Omit()
   id        String   @id @default(uuid())
+  ///@Omit()
   createdAt DateTime @default(now())
+  ///@Omit()
   updatedAt DateTime @updatedAt
 
-
+  ///@IsString()
   name        String
+  ///@IsObject()
   title       Json   @default("{}")
+  ///@IsObject()
   description Json   @default("{}")
 
+  ///@IsBoolean()
   isActive Boolean @default(false)
 
+  ///@IsISO8601()
   startsAt DateTime  @default(now())
+  ///@IsISO8601()
   endsAt   DateTime?
 
   @@map("studies")
