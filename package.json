@@ -66,7 +66,7 @@
     "@nrwl/nest": "14.5.8",
     "@nrwl/node": "14.5.8",
     "@nrwl/workspace": "14.5.8",
-    "@prisma-utils/prisma-crud-generator": "^1.2.6",
+    "@prisma-utils/prisma-crud-generator": "^1.2.7",
     "@prisma-utils/prismerge": "^1.7.0",
     "@types/express": "^4.17.13",
     "@types/jest": "27.5.1",
