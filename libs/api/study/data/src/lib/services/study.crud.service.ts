@@ -31,13 +31,16 @@ export class StudyCrudService {
       this.prismaService.study.count({ where: filter?.where }),
     ]);
 
+    const take = filter?.take ? filter?.take : count;
+    const skip = filter?.skip ? filter?.skip : 0;
+
     return {
       items: items,
       meta: {
         totalItems: count,
         items: items.length,
-        totalPages: Math.ceil(count / filter?.take),
-        page: filter?.skip / filter?.take + 1,
+        totalPages: Math.ceil(count / take),
+        page: skip / take + 1,
       },
     };
   }
