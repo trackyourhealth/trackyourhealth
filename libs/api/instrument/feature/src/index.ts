@@ -1,1 +1,1 @@
-export * from './lib/api-instrument-feature';
+export * from './lib/api-instrument-feature.module';

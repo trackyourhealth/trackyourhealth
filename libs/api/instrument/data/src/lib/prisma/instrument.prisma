@@ -1,0 +1,12 @@
+model Instrument {
+  ...id
+
+  name String
+  title Json @default("{}")
+  description Json @default("{}")
+
+  questionnaire Json @default("{}")
+  evaluator Json @default("{}")
+
+  @@map("instruments")
+}
