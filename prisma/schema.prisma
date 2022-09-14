@@ -48,3 +48,19 @@ model Study {
 
   @@map("studies")
 }
+
+model Instrument {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+  name        String
+  title       Json   @default("{}")
+  description Json   @default("{}")
+
+  questionnaire Json @default("{}")
+  evaluator     Json @default("{}")
+
+  @@map("instruments")
+}

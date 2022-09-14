@@ -2,7 +2,8 @@
   "api": {
     "inputs": [
       "./libs/api/core/util/src/lib/prisma/base.prisma",
-      "./libs/api/study/data/src/lib/prisma/study.prisma"
+      "./libs/api/study/data/src/lib/prisma/study.prisma",
+      "./libs/api/instrument/data/src/lib/prisma/instrument.prisma"
     ],
     "fragments": {
       "id": "./libs/api/core/util/src/lib/prisma/fragments/id.prisma.fragment"
