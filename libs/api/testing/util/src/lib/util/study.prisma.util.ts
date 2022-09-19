@@ -1,4 +1,5 @@
 import { Study } from '@prisma/client';
+import { CreateStudyInput } from '@trackyourhealth/api/study/data';
 
 export const studies: Study[] = [
   {
@@ -24,6 +25,19 @@ export const studies: Study[] = [
     endsAt: new Date(),
   },
 ];
+
+export const getCreateStudyInput = (
+  input?: Partial<CreateStudyInput>,
+): CreateStudyInput => {
+  return {
+    name: '',
+    title: {},
+    description: {},
+    isActive: true,
+    startsAt: new Date(),
+    ...input,
+  };
+};
 
 export const getStudyDateStringified = (study: Study) => {
   return {
