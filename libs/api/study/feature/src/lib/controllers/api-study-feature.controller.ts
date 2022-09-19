@@ -3,11 +3,12 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
   HttpStatus,
   Patch,
   Post,
 } from '@nestjs/common';
+import { Study } from '@prisma/client';
+import { PaginationInterface } from '@prisma-utils/nestjs-prisma';
 import {
   ParsedQueryModel,
   RequestParser,
@@ -39,7 +40,9 @@ export class ApiStudyFeatureController {
     },
   })
   @Get()
-  async getAllStudies(@RequestParser() parsedOptions: ParsedQueryModel) {
+  async getAllStudies(
+    @RequestParser() parsedOptions: ParsedQueryModel,
+  ): Promise<PaginationInterface<Study>> {
     const result = await this.apiStudyDataService.getAll(parsedOptions);
     return result;
   }
@@ -52,7 +55,7 @@ export class ApiStudyFeatureController {
     request: {},
   })
   @Get(':id')
-  async getStudyById(@UUIDParam('id') id: string) {
+  async getStudyById(@UUIDParam('id') id: string): Promise<Study> {
     const result = await this.apiStudyDataService.getById(id);
     return result;
   }
@@ -70,7 +73,7 @@ export class ApiStudyFeatureController {
     },
   })
   @Post()
-  async createStudy(@Body() input: CreateStudyRequest) {
+  async createStudy(@Body() input: CreateStudyRequest): Promise<Study> {
     const dto: CreateStudyDto = {
       name: input.data.name,
       title: input.data.title,
@@ -82,19 +85,6 @@ export class ApiStudyFeatureController {
 
     const result = await this.apiStudyDataService.createStudy(dto);
     return result;
-  }
-
-  // TODO: refactor paths
-  @Get('count/active')
-  async getStudyCount(): Promise<{ count: number }> {
-    const result = await this.apiStudyDataService.countStudies();
-    if (result === null) {
-      throw new HttpException(
-        'Connection to database failed',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-    return { count: result };
   }
 
   @Endpoint({
@@ -110,7 +100,7 @@ export class ApiStudyFeatureController {
   async updateStudy(
     @UUIDParam('id') id: string,
     @Body() input: UpdateStudyRequest,
-  ) {
+  ): Promise<Study> {
     const dto: UpdateStudyDto = {
       name: input.data.name,
       title: input.data.title,
@@ -134,7 +124,7 @@ export class ApiStudyFeatureController {
     },
   })
   @Delete(':id')
-  async deleteStudy(@UUIDParam('id') id: string) {
+  async deleteStudy(@UUIDParam('id') id: string): Promise<Study> {
     const result = await this.apiStudyDataService.deleteStudy(id);
     return result;
   }
