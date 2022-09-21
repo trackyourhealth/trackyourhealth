@@ -120,12 +120,12 @@ export class ApiStudyFeatureController {
       description: 'Delete a `Study` by ID',
     },
     response: {
-      status: 204,
+      status: HttpStatus.NO_CONTENT,
     },
   })
   @Delete(':id')
-  async deleteStudy(@UUIDParam('id') id: string): Promise<Study> {
-    const result = await this.apiStudyDataService.deleteStudy(id);
-    return result;
+  async deleteStudy(@UUIDParam('id') id: string): Promise<void> {
+    await this.apiStudyDataService.deleteStudy(id);
+    return;
   }
 }
