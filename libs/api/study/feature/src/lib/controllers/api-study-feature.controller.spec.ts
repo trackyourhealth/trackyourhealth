@@ -211,35 +211,6 @@ describe('ApiStudyFeatureController', () => {
     });
   });
 
-  describe('deleteStudy', () => {
-    it('returns valid study', async () => {
-      const expectedStudy = studies[1];
-      studyCrudMock.delete.mockResolvedValueOnce(expectedStudy);
-      expect.assertions(3);
-      const studyId = expectedStudy.id;
-      const result = await controller.deleteStudy(studyId);
-      expect(result).toStrictEqual(expectedStudy);
-      expect(studyCrudMock.delete).toBeCalledTimes(1);
-      expect(studyCrudMock.delete).toHaveBeenCalledWith({
-        where: { id: studyId },
-      });
-    });
-
-    it('throws InternalServerErrorException on invalid studyId', async () => {
-      studyCrudMock.delete.mockRejectedValueOnce(dbKnownError);
-      expect.assertions(4);
-      const studyId = 'invalid id';
-      await controller.deleteStudy(studyId).catch((e) => {
-        expect(e.status).toStrictEqual(500);
-        expect(e.name).toStrictEqual('InternalServerErrorException');
-      });
-      expect(studyCrudMock.delete).toBeCalledTimes(1);
-      expect(studyCrudMock.delete).toHaveBeenCalledWith({
-        where: { id: studyId },
-      });
-    });
-  });
-
   describe('updateStudy', () => {
     it('returns valid study', async () => {
       const expectedStudy = studies[1];
@@ -272,6 +243,34 @@ describe('ApiStudyFeatureController', () => {
       expect(studyCrudMock.update).toBeCalledTimes(1);
       expect(studyCrudMock.update).toHaveBeenCalledWith({
         data: input.data,
+        where: { id: studyId },
+      });
+    });
+  });
+
+  describe('deleteStudy', () => {
+    it('calls delete of db orrectly', async () => {
+      const expectedStudy = studies[1];
+      studyCrudMock.delete.mockResolvedValueOnce(expectedStudy);
+      expect.assertions(2);
+      const studyId = expectedStudy.id;
+      await controller.deleteStudy(studyId);
+      expect(studyCrudMock.delete).toBeCalledTimes(1);
+      expect(studyCrudMock.delete).toHaveBeenCalledWith({
+        where: { id: studyId },
+      });
+    });
+
+    it('throws InternalServerErrorException on invalid studyId', async () => {
+      studyCrudMock.delete.mockRejectedValueOnce(dbKnownError);
+      expect.assertions(4);
+      const studyId = 'invalid id';
+      await controller.deleteStudy(studyId).catch((e) => {
+        expect(e.status).toStrictEqual(500);
+        expect(e.name).toStrictEqual('InternalServerErrorException');
+      });
+      expect(studyCrudMock.delete).toBeCalledTimes(1);
+      expect(studyCrudMock.delete).toHaveBeenCalledWith({
         where: { id: studyId },
       });
     });
