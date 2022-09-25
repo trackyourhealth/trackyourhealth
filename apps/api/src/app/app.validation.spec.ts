@@ -1,9 +1,4 @@
-import {
-  HttpStatus,
-  INestApplication,
-  UnprocessableEntityException,
-  ValidationPipe,
-} from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { PrismaService } from '@prisma-utils/nestjs-prisma';
@@ -23,11 +18,12 @@ import helmet from 'helmet';
 import * as request from 'supertest';
 
 import { AppModule } from './app.module';
+import { getValidationPipe } from './config/app.config';
 
 describe('App validation', () => {
   let app: INestApplication;
   let globalPrefix: string;
-  let studiesBaseRoute: string;
+  let studyBaseRoute: string;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -47,27 +43,9 @@ describe('App validation', () => {
 
     globalPrefix = configService.get('api.apiPrefix');
     app.setGlobalPrefix(globalPrefix);
-    studiesBaseRoute = `/${globalPrefix}/studies`;
+    studyBaseRoute = `/${globalPrefix}/studies`;
 
-    app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        transform: true,
-        skipMissingProperties: false,
-        skipUndefinedProperties: false,
-        forbidNonWhitelisted: true,
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        // disable the use of @nestjs packages here for now, otherwise mapped-types does not work properly
-        // validatorPackage: require('@nestjs/class-validator'),
-        // transformerPackage: require('@nestjs/class-transformer'),
-        exceptionFactory: (errors) =>
-          new UnprocessableEntityException({
-            title: 'Validation Exception',
-            message: 'Validation failed',
-            error: errors,
-          }),
-      }),
-    );
+    app.useGlobalPipes(getValidationPipe());
 
     app.useGlobalInterceptors(new DataTransformerInterceptor());
     app.useGlobalFilters(new HttpExceptionFilter());
@@ -96,7 +74,7 @@ describe('App validation', () => {
         startsAt: new Date(),
       };
       const response = await request(app.getHttpServer())
-        .post(studiesBaseRoute)
+        .post(studyBaseRoute)
         .send({ data: body });
       const expectedStudy = getStudyDateStringified(study);
       expect(response.status).toStrictEqual(HttpStatus.CREATED);
@@ -110,9 +88,7 @@ describe('App validation', () => {
     it('should return Unprocessable Entity on empty body', async () => {
       studyCrudMock.create.mockResolvedValueOnce(studies[1]);
       expect.assertions(2);
-      const response = await request(app.getHttpServer()).post(
-        studiesBaseRoute,
-      );
+      const response = await request(app.getHttpServer()).post(studyBaseRoute);
       expect(response.status).toStrictEqual(HttpStatus.UNPROCESSABLE_ENTITY);
       expect(studyCrudMock.create).toBeCalledTimes(0);
     });
@@ -121,7 +97,7 @@ describe('App validation', () => {
       studyCrudMock.create.mockResolvedValueOnce(studies[1]);
       expect.assertions(2);
       const response = await request(app.getHttpServer())
-        .post(studiesBaseRoute)
+        .post(studyBaseRoute)
         .send({ data: {} });
       expect(response.status).toStrictEqual(HttpStatus.UNPROCESSABLE_ENTITY);
       expect(studyCrudMock.create).toBeCalledTimes(0);
@@ -136,7 +112,7 @@ describe('App validation', () => {
         startsAt: new Date(),
       };
       const response = await request(app.getHttpServer())
-        .post(studiesBaseRoute)
+        .post(studyBaseRoute)
         .send({ data: bodyNoName });
       expect(response.status).toStrictEqual(HttpStatus.UNPROCESSABLE_ENTITY);
       expect(studyCrudMock.create).toBeCalledTimes(0);
@@ -152,7 +128,7 @@ describe('App validation', () => {
         startsAt: new Date(),
       };
       const response = await request(app.getHttpServer())
-        .post(studiesBaseRoute)
+        .post(studyBaseRoute)
         .send({ data: bodyWrongTitle });
       expect(response.status).toStrictEqual(HttpStatus.UNPROCESSABLE_ENTITY);
       expect(studyCrudMock.create).toBeCalledTimes(0);
@@ -168,7 +144,7 @@ describe('App validation', () => {
         startsAt: new Date('23.09.2022'),
       };
       const response = await request(app.getHttpServer())
-        .post(studiesBaseRoute)
+        .post(studyBaseRoute)
         .send({ data: bodyWrongDate });
       expect(response.status).toStrictEqual(HttpStatus.UNPROCESSABLE_ENTITY);
       expect(studyCrudMock.create).toBeCalledTimes(0);

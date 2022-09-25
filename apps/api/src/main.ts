@@ -1,9 +1,4 @@
-import {
-  HttpStatus,
-  Logger,
-  UnprocessableEntityException,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -14,6 +9,7 @@ import {
 import helmet from 'helmet';
 
 import { AppModule } from './app/app.module';
+import { getValidationPipe } from './app/config/app.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -26,25 +22,7 @@ async function bootstrap() {
   app.setGlobalPrefix(globalPrefix);
 
   // register some global pipes
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      transform: true,
-      skipMissingProperties: false,
-      skipUndefinedProperties: false,
-      forbidNonWhitelisted: true,
-      errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      // disable the use of @nestjs packages here for now, otherwise mapped-types does not work properly
-      // validatorPackage: require('@nestjs/class-validator'),
-      // transformerPackage: require('@nestjs/class-transformer'),
-      exceptionFactory: (errors) =>
-        new UnprocessableEntityException({
-          title: 'Validation Exception',
-          message: 'Validation failed',
-          error: errors,
-        }),
-    }),
-  );
+  app.useGlobalPipes(getValidationPipe());
 
   app.useGlobalInterceptors(new DataTransformerInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
