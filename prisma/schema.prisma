@@ -50,10 +50,12 @@ model Study {
 }
 
 model Instrument {
+  ///@Omit()
   id        String   @id @default(uuid())
+  ///@Omit()
   createdAt DateTime @default(now())
+  ///@Omit()
   updatedAt DateTime @updatedAt
-
 
   name        String
   title       Json   @default("{}")
