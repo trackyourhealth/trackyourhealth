@@ -43,7 +43,6 @@ describe('App', () => {
 
   describe('GET global prefix', () => {
     it('should return OK', async () => {
-      expect.assertions(2);
       const response = await request(app.getHttpServer()).get(
         `/${globalPrefix}`,
       );
