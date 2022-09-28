@@ -7,13 +7,7 @@ import {
   HttpExceptionFilter,
 } from '@trackyourhealth/api/common/util';
 import { KratosGuard } from '@trackyourhealth/api/kratos/util';
-import {
-  defaultQueryValues,
-  getStudyDateStringified,
-  kratosMock,
-  studies,
-  studyCrudMock,
-} from '@trackyourhealth/api/testing/util';
+import { kratosMock, studyCrudMock } from '@trackyourhealth/api/testing/util';
 import helmet from 'helmet';
 import * as request from 'supertest';
 
