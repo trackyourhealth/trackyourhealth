@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { PrismaService } from '@prisma-utils/nestjs-prisma';
 
-import { ApiInstrumentDataService } from './api-instrument-data.service';
-import { ApiInstrumentEvaluationService } from './api-instrument-evaluation.service';
 import { InstrumentHandler } from './event-handlers/evaluate-instrument.handler';
+import { ApiInstrumentDataService } from './services/api-instrument-data.service';
+import { ApiInstrumentEvaluationService } from './services/api-instrument-evaluation.service';
 
 @Module({
   imports: [EventEmitterModule.forRoot()],

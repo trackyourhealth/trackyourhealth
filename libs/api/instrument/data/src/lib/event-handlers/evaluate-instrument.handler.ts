@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { Instrument } from '@prisma/client';
 
-import { ApiInstrumentEvaluationService } from '../api-instrument-evaluation.service';
+import { ApiInstrumentEvaluationService } from '../services/api-instrument-evaluation.service';
 
 @Injectable()
 export class InstrumentHandler {
