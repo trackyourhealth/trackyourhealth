@@ -7,6 +7,7 @@ const serviceMock = {
     update: jest.fn(),
     count: jest.fn(),
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   $transaction: jest.fn(async (calls: Promise<any>[]) => {
     return await Promise.all(calls);
   }),
