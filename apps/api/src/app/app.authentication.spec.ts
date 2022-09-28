@@ -20,7 +20,7 @@ import * as request from 'supertest';
 import { AppModule } from './app.module';
 import { getValidationPipe } from './config/app.config';
 
-describe('App authantification', () => {
+describe('App authentification', () => {
   let app: INestApplication;
   let globalPrefix: string;
   let studyBaseRoute: string;
@@ -61,32 +61,8 @@ describe('App authantification', () => {
 
   describe('return value on authorization success', () => {
     it('should return OK', async () => {
-      studyCrudMock.findMany.mockResolvedValueOnce(studies);
-      studyCrudMock.count.mockResolvedValueOnce(studies.length);
-      expect.assertions(7 + studies.length);
       const response = await request(app.getHttpServer()).get(studyBaseRoute);
-      expect(response.status).toStrictEqual(HttpStatus.OK);
-      const actualStudies = response.body.data.items;
-      expect(actualStudies.length).toStrictEqual(studies.length);
-      for (let i = 0; i < studies.length; i++) {
-        const expectedStudy = getStudyDateStringified(studies[i]);
-        expect(actualStudies[i]).toStrictEqual(expectedStudy);
-      }
-      expect(response.body.data.meta).toStrictEqual({
-        totalItems: 2,
-        totalPages: 1,
-        items: 2,
-        page: 1,
-      });
-      expect(studyCrudMock.findMany).toBeCalledTimes(1);
-      expect(studyCrudMock.findMany).toBeCalledWith({
-        ...defaultQueryValues,
-        where: { isActive: true },
-      });
-      expect(studyCrudMock.count).toBeCalledTimes(1);
-      expect(studyCrudMock.count).toBeCalledWith({
-        where: { isActive: true },
-      });
+      expect(response.status).not.toStrictEqual(HttpStatus.FORBIDDEN);
     });
   });
 

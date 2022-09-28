@@ -48,9 +48,6 @@ describe('App', () => {
         `/${globalPrefix}`,
       );
       expect(response.status).toStrictEqual(HttpStatus.OK);
-      expect(response.body).toStrictEqual({
-        data: { message: 'Welcome to api!' },
-      });
     });
   });
 
