@@ -6,8 +6,8 @@ import { ParsedQueryModel } from '@prisma-utils/nestjs-request-parser';
 import {
   CreateInstrumentDto,
   UpdateInstrumentDto,
-} from './data/dtos/instrument.dto';
-import { InstrumentCrudService } from './services/instrument.crud.service';
+} from '../data/dtos/instrument.dto';
+import { InstrumentCrudService } from './instrument.crud.service';
 
 @Injectable()
 export class ApiInstrumentDataService {
