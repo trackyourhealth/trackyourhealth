@@ -8,3 +8,4 @@ export * from './lib/filters/http-exception.filter';
 export * from './lib/interceptors/data-transformer.interceptor';
 export * from './lib/interceptors/exception.interceptor';
 export * from './lib/pipes/trim.pipe';
+export * from './lib/pipes/validation.pipe';
