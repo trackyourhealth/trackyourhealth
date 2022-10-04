@@ -249,7 +249,7 @@ describe('ApiStudyFeatureController', () => {
   });
 
   describe('deleteStudy', () => {
-    it('calls delete of db orrectly', async () => {
+    it('calls delete of db correctly', async () => {
       const expectedStudy = studies[1];
       studyCrudMock.delete.mockResolvedValueOnce(expectedStudy);
       expect.assertions(2);
