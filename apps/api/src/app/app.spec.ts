@@ -9,7 +9,7 @@ import helmet from 'helmet';
 import * as request from 'supertest';
 
 import { AppModule } from './app.module';
-import { getValidationPipe } from './config/app.config';
+import { createValidationPipe } from './initializers/app.initializer';
 
 describe('App', () => {
   let app: INestApplication;
@@ -29,7 +29,7 @@ describe('App', () => {
     globalPrefix = configService.get('api.apiPrefix');
     app.setGlobalPrefix(globalPrefix);
 
-    app.useGlobalPipes(getValidationPipe());
+    app.useGlobalPipes(createValidationPipe());
 
     app.useGlobalInterceptors(new DataTransformerInterceptor());
     app.useGlobalFilters(new HttpExceptionFilter());

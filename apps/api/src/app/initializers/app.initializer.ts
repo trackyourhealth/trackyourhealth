@@ -4,8 +4,8 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 
-export const getValidationPipe = () =>
-  new ValidationPipe({
+export function createValidationPipe() {
+  return new ValidationPipe({
     whitelist: true,
     transform: true,
     skipMissingProperties: false,
@@ -22,3 +22,4 @@ export const getValidationPipe = () =>
         error: errors,
       }),
   });
+}
