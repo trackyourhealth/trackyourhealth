@@ -9,7 +9,7 @@ import {
 import helmet from 'helmet';
 
 import { AppModule } from './app/app.module';
-import { getValidationPipe } from './app/config/app.config';
+import { createValidationPipe } from './app/initializers/app.initializer';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,7 +22,7 @@ async function bootstrap() {
   app.setGlobalPrefix(globalPrefix);
 
   // register some global pipes
-  app.useGlobalPipes(getValidationPipe());
+  app.useGlobalPipes(createValidationPipe());
 
   app.useGlobalInterceptors(new DataTransformerInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());

@@ -12,7 +12,7 @@ import helmet from 'helmet';
 import * as request from 'supertest';
 
 import { AppModule } from './app.module';
-import { getValidationPipe } from './config/app.config';
+import { createValidationPipe } from './initializers/app.initializer';
 
 describe('App authentification', () => {
   let app: INestApplication;
@@ -39,7 +39,7 @@ describe('App authentification', () => {
     app.setGlobalPrefix(globalPrefix);
     studyBaseRoute = `/${globalPrefix}/studies`;
 
-    app.useGlobalPipes(getValidationPipe());
+    app.useGlobalPipes(createValidationPipe());
 
     app.useGlobalInterceptors(new DataTransformerInterceptor());
     app.useGlobalFilters(new HttpExceptionFilter());
