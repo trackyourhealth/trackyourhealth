@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import {
   DataTransformerInterceptor,
+  ExceptionInterceptor,
   HttpExceptionFilter,
 } from '@trackyourhealth/api/common/util';
 import helmet from 'helmet';
@@ -24,7 +25,10 @@ async function bootstrap() {
   // register some global pipes
   app.useGlobalPipes(createValidationPipe());
 
-  app.useGlobalInterceptors(new DataTransformerInterceptor());
+  app.useGlobalInterceptors(
+    new DataTransformerInterceptor(),
+    new ExceptionInterceptor(),
+  );
   app.useGlobalFilters(new HttpExceptionFilter());
 
   const port = configService.get('api.port');
