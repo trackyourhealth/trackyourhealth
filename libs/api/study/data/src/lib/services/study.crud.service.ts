@@ -14,6 +14,7 @@ import {
   PaginationInterface,
   PrismaService,
 } from '@prisma-utils/nestjs-prisma';
+import { err, ok, Result } from 'neverthrow';
 
 @Injectable()
 export class StudyCrudService {
@@ -25,65 +26,84 @@ export class StudyCrudService {
 
   async getAll(
     filter?: Prisma.StudyFindManyArgs,
-  ): Promise<PaginationInterface<Study>> {
-    const [items, count] = await this.prismaService.$transaction([
-      this.prismaService.study.findMany(filter),
-      this.prismaService.study.count({ where: filter?.where }),
-    ]);
-
-    const take = filter?.take ? filter?.take : count;
-    const skip = filter?.skip ? filter?.skip : 0;
-
-    return {
-      items: items,
-      meta: {
-        totalItems: count,
-        items: items.length,
-        totalPages: Math.ceil(count / take),
-        page: skip / take + 1,
-      },
-    };
-  }
-
-  async getById(id: string): Promise<Study> {
+  ): Promise<Result<PaginationInterface<Study>, Error>> {
     try {
-      const result = await this.prismaService.study.findUniqueOrThrow({
-        where: { id: id },
-      });
-      return result;
-    } catch (e) {
-      throw new NotFoundException(`Study Resource ${id} was not found.`);
-    }
-  }
+      const [items, count] = await this.prismaService.$transaction([
+        this.prismaService.study.findMany(filter),
+        this.prismaService.study.count({ where: filter?.where }),
+      ]);
 
-  async create(data: Prisma.StudyCreateInput): Promise<Study> {
-    try {
-      const result = await this.prismaService.study.create({ data: data });
-      return result;
-    } catch (e) {
-      throw new InternalServerErrorException(`Could not create Study Resource`);
-    }
-  }
+      const take = filter?.take ? filter?.take : count;
+      const skip = filter?.skip ? filter?.skip : 0;
 
-  async update(id: string, data: Prisma.StudyUpdateInput): Promise<Study> {
-    try {
-      return await this.prismaService.study.update({
-        where: { id: id },
-        data: data,
+      return ok({
+        items: items,
+        meta: {
+          totalItems: count,
+          items: items.length,
+          totalPages: Math.ceil(count / take),
+          page: skip / take + 1,
+        },
       });
     } catch (e) {
-      throw new InternalServerErrorException(
-        `Could not update Study Resource ${id}`,
+      return err(
+        new InternalServerErrorException(`Could not get Study Resources.`),
       );
     }
   }
 
-  async delete(id: string): Promise<Study> {
+  async getById(id: string): Promise<Result<Study, Error>> {
     try {
-      return await this.prismaService.study.delete({ where: { id: id } });
+      const result = await this.prismaService.study.findUniqueOrThrow({
+        where: { id: id },
+      });
+      return ok(result);
     } catch (e) {
-      throw new InternalServerErrorException(
-        `Could not delete Study Model ${id}`,
+      return err(new NotFoundException(`Study Resource ${id} was not found.`));
+    }
+  }
+
+  async create(data: Prisma.StudyCreateInput): Promise<Result<Study, Error>> {
+    try {
+      const result = await this.prismaService.study.create({ data: data });
+      return ok(result);
+    } catch (e) {
+      return err(
+        new InternalServerErrorException(`Could not create Study Resource.`),
+      );
+    }
+  }
+
+  async update(
+    id: string,
+    data: Prisma.StudyUpdateInput,
+  ): Promise<Result<Study, Error>> {
+    try {
+      const result = await this.prismaService.study.update({
+        where: { id: id },
+        data: data,
+      });
+      return ok(result);
+    } catch (e) {
+      return err(
+        new InternalServerErrorException(
+          `Could not update Study Resource ${id}.`,
+        ),
+      );
+    }
+  }
+
+  async delete(id: string): Promise<Result<Study, Error>> {
+    try {
+      const result = await this.prismaService.study.delete({
+        where: { id: id },
+      });
+      return ok(result);
+    } catch (e) {
+      return err(
+        new InternalServerErrorException(
+          `Could not delete Study Resource ${id}.`,
+        ),
       );
     }
   }
