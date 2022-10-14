@@ -1,19 +1,13 @@
 model Study {
   ...id
 
-  ///@IsString()
   name String
-  ///@IsObject()
   title Json @default("{}")
-  ///@IsObject()
   description Json @default("{}")
 
-  ///@IsBoolean()
   isActive Boolean @default(false)
 
-  ///@IsISO8601()
   startsAt DateTime @default(now())
-  ///@IsISO8601()
   endsAt DateTime?
 
   @@map("studies")
