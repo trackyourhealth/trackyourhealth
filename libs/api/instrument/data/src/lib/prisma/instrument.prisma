@@ -1,12 +1,19 @@
 model Instrument {
   ...id
 
+  study Study @relation(fields: [studyId], references: [id])
+  studyId String
+
   name String
   title Json @default("{}")
   description Json @default("{}")
 
-  questionnaire Json @default("{}")
-  evaluator Json @default("{}")
+  content Json
+  evaluations Json @default("{}")
+  state Json @default("{}")
+
+  duration Json?
+  schedule Json?
 
   @@map("instruments")
 }
