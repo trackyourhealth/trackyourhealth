@@ -19,6 +19,10 @@ export class DataTransformerInterceptor<T>
     context: ExecutionContext,
     next: CallHandler,
   ): Observable<Response<T>> {
-    return next.handle().pipe(map((data) => ({ data: data })));
+    return next.handle().pipe(
+      map((data) => {
+        return { data: data };
+      }),
+    );
   }
 }
