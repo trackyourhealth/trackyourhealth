@@ -47,6 +47,7 @@
     "deepmerge": "^4.2.2",
     "env-var": "^7.1.1",
     "helmet": "^5.1.1",
+    "neverthrow": "^5.0.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.5.6",
     "tslib": "^2.4.0",
