@@ -1,76 +1,106 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { PrismaService } from '@prisma-utils/nestjs-prisma';
+import { getValidationPipe } from '@trackyourhealth/api/common/util';
 import {
   ApiInstrumentDataModule,
   ApiInstrumentEvaluationService,
 } from '@trackyourhealth/api/instrument/data';
+import { KratosGuard } from '@trackyourhealth/api/kratos/util';
+import {
+  dbConnectionError,
+  defaultQueryValues,
+  instrumentCrudMock,
+  kratosMock,
+} from '@trackyourhealth/api/testing/util';
 import * as request from 'supertest';
 
 import { ApiInstrumentFeatureModule } from './api-instrument-feature.module';
-
-const instrumentCrudMock = {
-  instrument: {
-    create: jest.fn(),
-    findMany: jest.fn(),
-  },
-};
 
 const evaluationMock = {
   evaluateInstrument: jest.fn(),
 };
 
-describe('apiInstrumentFeature', () => {
+describe('ApiInstrumentFeature', () => {
   const baseRoute = '/instruments';
   let app: INestApplication;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [ApiInstrumentFeatureModule, ApiInstrumentDataModule],
+      imports: [
+        ApiInstrumentFeatureModule,
+        ApiInstrumentDataModule,
+        ThrottlerModule.forRoot(),
+      ],
     })
       .overrideProvider(PrismaService)
-      .useValue(instrumentCrudMock)
+      .useValue(instrumentCrudMock.service)
       .overrideProvider(ApiInstrumentEvaluationService)
       .useValue(evaluationMock)
+      .overrideGuard(KratosGuard)
+      .useValue(kratosMock.guard)
       .compile();
 
-    app = module.createNestApplication();
+    app = module.createNestApplication({ logger: false });
+    app.useGlobalPipes(getValidationPipe());
     await app.init();
   });
 
   beforeEach(() => {
     evaluationMock.evaluateInstrument.mockClear();
-    instrumentCrudMock.instrument.create.mockClear();
-    instrumentCrudMock.instrument.findMany.mockClear();
+    instrumentCrudMock.clearMocks();
   });
 
-  it('should work', async () => {
-    const result = { msg: 'hi' };
-    instrumentCrudMock.instrument.findMany.mockResolvedValueOnce(result);
-    const response = await request(app.getHttpServer()).get(baseRoute);
-    expect(response.status).toStrictEqual(HttpStatus.OK);
-    expect(response.body).toStrictEqual(result);
+  describe('GET /instruments', () => {
+    it('returns Forbidden on failed authorization', async () => {
+      kratosMock.canActivate.mockResolvedValueOnce(false);
+      expect.assertions(1);
+      const response = await request(app.getHttpServer()).get(baseRoute);
+      expect(response.status).toStrictEqual(HttpStatus.FORBIDDEN);
+    });
+
+    it('returns Internal Server Error on missing database connection', async () => {
+      instrumentCrudMock.findMany.mockRejectedValueOnce(dbConnectionError);
+      instrumentCrudMock.count.mockRejectedValueOnce(dbConnectionError);
+      expect.assertions(5);
+      const response = await request(app.getHttpServer()).get(baseRoute);
+      expect(response.status).toStrictEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+      expect(instrumentCrudMock.findMany).toBeCalledTimes(1);
+      expect(instrumentCrudMock.findMany).toBeCalledWith(defaultQueryValues);
+      expect(instrumentCrudMock.count).toBeCalledTimes(1);
+      expect(instrumentCrudMock.count).toBeCalledWith({});
+    });
   });
 
-  it('events should be thrown', async () => {
+  describe('POST /instruments', () => {
+    it('returns Unprocessable Entity on empty body', async () => {
+      expect.assertions(2);
+      const response = await request(app.getHttpServer()).post(baseRoute);
+      expect(response.status).toStrictEqual(HttpStatus.UNPROCESSABLE_ENTITY);
+      expect(instrumentCrudMock.create).toBeCalledTimes(0);
+    });
+  });
+
+  /* it('events should be thrown', async () => {
     const result = { name: 'test name' };
     expect.assertions(6);
     evaluationMock.evaluateInstrument.mockRejectedValueOnce(
       new Error('evaluation error'),
     );
-    instrumentCrudMock.instrument.create.mockResolvedValueOnce(result);
+    instrumentCrudMock.create.mockResolvedValueOnce(result);
     const response = await request(app.getHttpServer())
       .post(baseRoute)
       .send({ answers: result });
     expect(response.status).toStrictEqual(HttpStatus.CREATED);
     expect(response.body).toStrictEqual(result);
-    expect(instrumentCrudMock.instrument.create).toBeCalledTimes(1);
-    expect(instrumentCrudMock.instrument.create).toBeCalledWith({
+    expect(instrumentCrudMock.create).toBeCalledTimes(1);
+    expect(instrumentCrudMock.create).toBeCalledWith({
       data: result,
     });
     expect(evaluationMock.evaluateInstrument).toBeCalledTimes(1);
     expect(evaluationMock.evaluateInstrument).toBeCalledWith(result);
-  });
+  }); */
 
   afterAll(async () => {
     await app.close();
