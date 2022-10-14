@@ -7,8 +7,6 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { Study } from '@prisma/client';
-import { PaginationInterface } from '@prisma-utils/nestjs-prisma';
 import {
   ParsedQueryModel,
   RequestParser,
@@ -40,9 +38,7 @@ export class ApiStudyFeatureController {
     },
   })
   @Get()
-  async getAllStudies(
-    @RequestParser() parsedOptions: ParsedQueryModel,
-  ): Promise<PaginationInterface<Study>> {
+  async getAllStudies(@RequestParser() parsedOptions: ParsedQueryModel) {
     const result = await this.apiStudyDataService.getAll(parsedOptions);
     return result;
   }
@@ -52,10 +48,9 @@ export class ApiStudyFeatureController {
       summary: 'Get Study',
       description: 'Returns one `Study` by ID',
     },
-    request: {},
   })
   @Get(':id')
-  async getStudyById(@UUIDParam('id') id: string): Promise<Study> {
+  async getStudyById(@UUIDParam('id') id: string) {
     const result = await this.apiStudyDataService.getById(id);
     return result;
   }
@@ -73,7 +68,7 @@ export class ApiStudyFeatureController {
     },
   })
   @Post()
-  async createStudy(@Body() input: CreateStudyRequest): Promise<Study> {
+  async createStudy(@Body() input: CreateStudyRequest) {
     const dto: CreateStudyDto = {
       name: input.data.name,
       title: input.data.title,
@@ -100,7 +95,7 @@ export class ApiStudyFeatureController {
   async updateStudy(
     @UUIDParam('id') id: string,
     @Body() input: UpdateStudyRequest,
-  ): Promise<Study> {
+  ) {
     const dto: UpdateStudyDto = {
       name: input.data.name,
       title: input.data.title,
