@@ -12,7 +12,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/api/kratos/util"],
+      "outputs": ["{workspaceRoot}/coverage/libs/api/kratos/util"],
       "options": {
         "jestConfig": "libs/api/kratos/util/jest.config.ts",
         "passWithNoTests": true

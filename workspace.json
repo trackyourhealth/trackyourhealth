@@ -19,7 +19,7 @@
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/api/instrument/data"],
+          "outputs": ["{workspaceRoot}/coverage/libs/api/instrument/data"],
           "options": {
             "jestConfig": "libs/api/instrument/data/jest.config.ts",
             "passWithNoTests": true
@@ -42,7 +42,7 @@
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/api/instrument/feature"],
+          "outputs": ["{workspaceRoot}/coverage/libs/api/instrument/feature"],
           "options": {
             "jestConfig": "libs/api/instrument/feature/jest.config.ts",
             "passWithNoTests": true
@@ -66,7 +66,7 @@
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/api/study/data"],
+          "outputs": ["{workspaceRoot}/coverage/libs/api/study/data"],
           "options": {
             "jestConfig": "libs/api/study/data/jest.config.ts",
             "passWithNoTests": true
@@ -89,7 +89,7 @@
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/api/study/feature"],
+          "outputs": ["{workspaceRoot}/coverage/libs/api/study/feature"],
           "options": {
             "jestConfig": "libs/api/study/feature/jest.config.ts",
             "passWithNoTests": true
@@ -112,7 +112,7 @@
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/api/testing/util"],
+          "outputs": ["{workspaceRoot}/coverage/libs/api/testing/util"],
           "options": {
             "jestConfig": "libs/api/testing/util/jest.config.ts",
             "passWithNoTests": true
