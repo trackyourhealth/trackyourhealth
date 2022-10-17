@@ -4,20 +4,14 @@
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
-      "outputs": [
-        "{options.outputFile}"
-      ],
+      "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": [
-          "libs/api/core/util/**/*.ts"
-        ]
+        "lintFilePatterns": ["libs/api/core/util/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": [
-        "coverage/libs/api/core/util"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/libs/api/core/util"],
       "options": {
         "jestConfig": "libs/api/core/util/jest.config.ts",
         "passWithNoTests": true
