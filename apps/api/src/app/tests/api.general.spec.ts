@@ -4,9 +4,9 @@ import { HttpExceptionFilter } from '@trackyourhealth/api/common/util';
 import helmet from 'helmet';
 import * as request from 'supertest';
 
-import { GeneralTestController } from './../controllers/test.general.controller';
+import { GeneralTestController } from '../controllers/test.general.controller';
 
-describe('Api General', () => {
+describe('API General', () => {
   let app: INestApplication;
   let globalPrefix: string;
 
