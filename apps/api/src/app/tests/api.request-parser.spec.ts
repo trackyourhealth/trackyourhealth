@@ -2,9 +2,9 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
 
-import { RequestParserTestController } from './../controllers/test.request-parser.controller';
+import { RequestParserTestController } from '../controllers/test.request-parser.controller';
 
-describe('Request Parser', () => {
+describe('API Request Parser', () => {
   let app: INestApplication;
   let globalPrefix: string;
 

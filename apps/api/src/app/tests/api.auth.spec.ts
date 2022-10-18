@@ -7,7 +7,7 @@ import * as request from 'supertest';
 import { AppModule } from '../app.module';
 import { AuthTestController } from '../controllers/test.auth.controller';
 
-describe('Api Authentication', () => {
+describe('API Authentication', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -24,7 +24,7 @@ describe('Api Authentication', () => {
     await app.init();
   });
 
-  it('app should be defined', () => {
+  it('should be defined', () => {
     expect(app).toBeDefined();
   });
 
