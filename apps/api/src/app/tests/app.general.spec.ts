@@ -1,15 +1,9 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
-import {
-  DataTransformerInterceptor,
-  HttpExceptionFilter,
-} from '@trackyourhealth/api/common/util';
+import { HttpExceptionFilter } from '@trackyourhealth/api/common/util';
 import helmet from 'helmet';
 import * as request from 'supertest';
 
-import { AppModule } from '../app.module';
-import { createValidationPipe } from '../initializers/app.initializer';
 import { GeneralTestController } from './../controllers/test.general.controller';
 
 describe('Api General', () => {
@@ -23,7 +17,6 @@ describe('Api General', () => {
     }).compile();
 
     app = module.createNestApplication();
-    // const configService = app.get(ConfigService);
 
     app.enableCors();
     app.use(helmet());
@@ -31,9 +24,6 @@ describe('Api General', () => {
     globalPrefix = 'api';
     app.setGlobalPrefix(globalPrefix);
 
-    // app.useGlobalPipes(createValidationPipe());
-
-    // app.useGlobalInterceptors(new DataTransformerInterceptor());
     app.useGlobalFilters(new HttpExceptionFilter());
 
     await app.init();

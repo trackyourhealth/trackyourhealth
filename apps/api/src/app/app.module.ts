@@ -4,8 +4,6 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from '@prisma-utils/nestjs-prisma';
 
 import environment from '../environments/environment';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ApiModule } from './modules/api.module';
 
 @Module({
@@ -25,7 +23,7 @@ import { ApiModule } from './modules/api.module';
     PrismaModule.forRoot({ isGlobal: true }),
     ApiModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
