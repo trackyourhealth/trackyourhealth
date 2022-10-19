@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing';
 import { ThrottlerModule } from '@nestjs/throttler';
 import * as request from 'supertest';
 
-import { ThrottleTestController } from '../controllers/test.throttle.controller';
+import { ThrottleTestController } from './test.throttle.controller';
 
 describe('API Throttle', () => {
   let app: INestApplication;
