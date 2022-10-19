@@ -4,8 +4,8 @@ import { KratosGuard } from '@trackyourhealth/api/kratos/util';
 import { kratosMock } from '@trackyourhealth/api/testing/util';
 import * as request from 'supertest';
 
-import { AppModule } from '../app.module';
-import { AuthTestController } from '../controllers/test.auth.controller';
+import { AppModule } from '../../app.module';
+import { AuthTestController } from './test.auth.controller';
 
 describe('API Authentication', () => {
   let app: INestApplication;

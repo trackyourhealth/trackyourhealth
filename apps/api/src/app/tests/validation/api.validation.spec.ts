@@ -2,8 +2,8 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
 
-import { ValidationTestController } from './../controllers/test.validation.controller';
-import { createValidationPipe } from './../initializers/app.initializer';
+import { createValidationPipe } from './../../initializers/app.initializer';
+import { ValidationTestController } from './test.validation.controller';
 
 describe('API Validation', () => {
   let app: INestApplication;
