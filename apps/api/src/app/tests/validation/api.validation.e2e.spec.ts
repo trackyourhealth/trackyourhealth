@@ -1,8 +1,8 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { createValidationPipe } from '@trackyourhealth/api/core/util';
 import * as request from 'supertest';
 
-import { createValidationPipe } from '../../initializers/app.initializer';
 import { ValidationTestController } from './test.validation.controller';
 
 describe('API Validation', () => {
