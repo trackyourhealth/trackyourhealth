@@ -7,10 +7,10 @@ import {
   ExceptionInterceptor,
   HttpExceptionFilter,
 } from '@trackyourhealth/api/common/util';
+import { createValidationPipe } from '@trackyourhealth/api/core/util';
 import helmet from 'helmet';
 
 import { AppModule } from './app/app.module';
-import { createValidationPipe } from './app/initializers/app.initializer';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
