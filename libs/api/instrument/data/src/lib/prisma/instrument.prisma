@@ -12,8 +12,7 @@ model Instrument {
   evaluations Json @default("{}")
   state Json @default("{}")
 
-  duration Json?
-  schedule Json?
+  schedule Json @default("{}")
 
   @@map("instruments")
 }
