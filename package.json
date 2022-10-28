@@ -40,7 +40,7 @@
     "@nestjs/throttler": "3.1.0",
     "@ory/kratos-client": "^0.10.1",
     "@prisma-utils/nestjs-prisma": "^1.9.0",
-    "@prisma-utils/nestjs-request-parser": "^1.1.0",
+    "@prisma-utils/nestjs-request-parser": "^1.2.0",
     "@prisma/client": "4.4.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
