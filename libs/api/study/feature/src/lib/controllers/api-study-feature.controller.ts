@@ -119,8 +119,8 @@ export class ApiStudyFeatureController {
     },
   })
   @Delete(':id')
-  async deleteStudy(@UUIDParam('id') id: string): Promise<void> {
-    await this.apiStudyDataService.deleteStudy(id);
-    return;
+  async deleteStudy(@UUIDParam('id') id: string) {
+    const result = await this.apiStudyDataService.deleteStudy(id);
+    return result;
   }
 }

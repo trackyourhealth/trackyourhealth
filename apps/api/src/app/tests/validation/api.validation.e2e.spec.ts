@@ -45,7 +45,7 @@ describe('API Validation', () => {
         .post(`/api/tests`)
         .send({ data: body });
 
-      expect(response.status).toBe(HttpStatus.CREATED);
+      expect(response.status).toStrictEqual(HttpStatus.CREATED);
     });
   });
 
@@ -55,7 +55,7 @@ describe('API Validation', () => {
         .post(`/api/tests`)
         .send({});
 
-      expect(response.status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+      expect(response.status).toStrictEqual(HttpStatus.UNPROCESSABLE_ENTITY);
     });
 
     it('should fail on wrong datatypes', async () => {
@@ -69,7 +69,7 @@ describe('API Validation', () => {
         .post(`/api/tests`)
         .send({ data: body });
 
-      expect(response.status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+      expect(response.status).toStrictEqual(HttpStatus.UNPROCESSABLE_ENTITY);
     });
 
     it('should fail on unknown additional fields', async () => {
@@ -84,7 +84,7 @@ describe('API Validation', () => {
         .post(`/api/tests`)
         .send({ data: body });
 
-      expect(response.status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+      expect(response.status).toStrictEqual(HttpStatus.UNPROCESSABLE_ENTITY);
     });
 
     it('should fail on missing attributes', async () => {
@@ -96,7 +96,7 @@ describe('API Validation', () => {
         .post(`/api/tests`)
         .send({ data: body });
 
-      expect(response.status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+      expect(response.status).toStrictEqual(HttpStatus.UNPROCESSABLE_ENTITY);
     });
   });
 
