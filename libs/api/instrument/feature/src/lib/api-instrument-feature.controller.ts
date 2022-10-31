@@ -21,6 +21,7 @@ import {
   UpdateInstrumentDto,
   UpdateInstrumentInput,
 } from '@trackyourhealth/api/instrument/data';
+import { Result } from 'neverthrow';
 
 import {
   CreateInstrumentRequest,
@@ -47,7 +48,7 @@ export class ApiInstrumentFeatureController {
   @Get()
   async getAllInstruments(
     @RequestParser() parsedOptions: ParsedQueryModel,
-  ): Promise<PaginationInterface<Instrument>> {
+  ): Promise<Result<PaginationInterface<Instrument>, Error>> {
     const result = await this.apiInstrumentDataService.getAll(parsedOptions);
     return result;
   }
@@ -60,7 +61,9 @@ export class ApiInstrumentFeatureController {
     request: {},
   })
   @Get(':id')
-  async getInstrumentById(@UUIDParam('id') id: string): Promise<Instrument> {
+  async getInstrumentById(
+    @UUIDParam('id') id: string,
+  ): Promise<Result<Instrument, Error>> {
     const result = await this.apiInstrumentDataService.getById(id);
     return result;
   }
@@ -80,7 +83,7 @@ export class ApiInstrumentFeatureController {
   @Post()
   async createInstrument(
     @Body() input: CreateInstrumentRequest,
-  ): Promise<Instrument> {
+  ): Promise<Result<Instrument, Error>> {
     const dto: CreateInstrumentDto = {
       name: input.data.name,
       title: input.data.title,
@@ -106,7 +109,7 @@ export class ApiInstrumentFeatureController {
   async updateInstrument(
     @UUIDParam('id') id: string,
     @Body() input: UpdateInstrumentRequest,
-  ): Promise<Instrument> {
+  ): Promise<Result<Instrument, Error>> {
     const dto: UpdateInstrumentDto = {
       name: input.data.name,
       title: input.data.title,
