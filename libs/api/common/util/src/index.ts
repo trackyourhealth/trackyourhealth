@@ -5,6 +5,7 @@ export * from './lib/decorators/openapi/endpoint.decorator';
 export * from './lib/decorators/uuid-param.decorator';
 export * from './lib/enums/roles.enum';
 export * from './lib/filters/http-exception.filter';
+export * from './lib/fsm/state.machine';
 export * from './lib/interceptors/data-transformer.interceptor';
 export * from './lib/interceptors/exception.interceptor';
 export * from './lib/pipes/trim.pipe';
