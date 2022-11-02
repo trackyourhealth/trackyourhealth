@@ -1,23 +1,12 @@
-import { Prisma } from '@prisma/client';
-
-import { StateMachine, Transition } from './state.machine';
-
-export type State = 'active' | 'draft' | 'retired';
-
-export type Event = 'publish' | 'redraft' | 'retire';
-
-const transitions: Transition<State, Event>[] = [
-  { from: 'draft', cause: 'publish', to: 'active' },
-  { from: 'active', cause: 'retire', to: 'retired' },
-  { from: 'active', cause: 'redraft', to: 'draft' },
-];
+import { Event, State, transitions } from './machine.config';
+import { StateMachine } from './state.machine';
 
 describe('StateMachine', () => {
   let machine: StateMachine<State, Event>;
-  const initState: State[] = ['draft'];
+  const initialState: State[] = ['draft'];
 
   beforeEach(() => {
-    machine = new StateMachine<State, Event>(initState, transitions);
+    machine = new StateMachine<State, Event>(initialState, transitions);
   });
 
   it('should be defined', () => {
@@ -40,31 +29,31 @@ describe('StateMachine', () => {
 
   describe('history', () => {
     it('should not add state after incorrect event', () => {
-      expect(machine.getHistory()).toStrictEqual<State[]>(initState);
+      expect(machine.getHistory()).toStrictEqual<State[]>(initialState);
       expect(machine.transition('retire')).toBeFalsy();
-      expect(machine.getHistory()).toStrictEqual<State[]>(initState);
+      expect(machine.getHistory()).toStrictEqual<State[]>(initialState);
     });
 
     it('should add state after correct event', () => {
-      expect(machine.getHistory()).toStrictEqual<State[]>(initState);
+      expect(machine.getHistory()).toStrictEqual<State[]>(initialState);
       expect(machine.transition('publish')).toBeTruthy();
       expect(machine.getHistory()).toStrictEqual<State[]>(['draft', 'active']);
     });
 
     it('should not be accessible from the outside', () => {
       const history = machine.getHistory();
-      expect(history).toStrictEqual<State[]>(initState);
+      expect(history).toStrictEqual<State[]>(initialState);
       history.push('draft');
       expect(history).toStrictEqual<State[]>(['draft', 'draft']);
-      expect(machine.getHistory()).toStrictEqual<State[]>(initState);
+      expect(machine.getHistory()).toStrictEqual<State[]>(initialState);
     });
   });
 
   describe('persistance', () => {
     describe('success', () => {
-      it('should parse from correct string', () => {
-        const storedSM = machine.persist();
-        const result = StateMachine.create<State, Event>(storedSM);
+      it('should parse from correct object', () => {
+        const storedSM = { ...machine };
+        const result = StateMachine.fromJson<State, Event>(storedSM);
         expect(result).toBeDefined();
         expect(result.isOk()).toBeTruthy();
         const stateMachine = result._unsafeUnwrap();
@@ -80,76 +69,72 @@ describe('StateMachine', () => {
 
     describe('fail', () => {
       it('should fail from empty string', () => {
-        const result = StateMachine.create<State, Event>('');
+        const result = StateMachine.fromJson<State, Event>('');
         expect(result.isErr()).toBeTruthy();
       });
 
-      it('should fail from string not containing transitions', () => {
-        const obj = { history: initState };
-        const persistedObj = JSON.stringify(obj);
-        const result = StateMachine.create<State, Event>(persistedObj);
+      it('should fail from empty object', () => {
+        const result = StateMachine.fromJson<State, Event>({});
         expect(result.isErr()).toBeTruthy();
       });
 
-      it('should fail from string not containing history', () => {
+      it('should fail from object not containing transitions', () => {
+        const obj = { history: initialState };
+        const result = StateMachine.fromJson<State, Event>(obj);
+        expect(result.isErr()).toBeTruthy();
+      });
+
+      it('should fail from object not containing history', () => {
         const obj = { transitions: transitions };
-        const persistedObj = JSON.stringify(obj);
-        const result = StateMachine.create<State, Event>(persistedObj);
+        const result = StateMachine.fromJson<State, Event>(obj);
         expect(result.isErr()).toBeTruthy();
       });
 
-      it('should fail from string not containing history as array', () => {
+      it('should fail from object not containing history as array', () => {
         const obj = { history: 'fail', transitions: transitions };
-        const persistedObj = JSON.stringify(obj);
-        const result = StateMachine.create<State, Event>(persistedObj);
+        const result = StateMachine.fromJson<State, Event>(obj);
         expect(result.isErr()).toBeTruthy();
       });
 
-      it('should fail from string not containing transitions as array', () => {
-        const obj = { history: initState, transitions: 'fail' };
-        const persistedObj = JSON.stringify(obj);
-        const result = StateMachine.create<State, Event>(persistedObj);
+      it('should fail from object not containing transitions as array', () => {
+        const obj = { history: initialState, transitions: 'fail' };
+        const result = StateMachine.fromJson<State, Event>(obj);
         expect(result.isErr()).toBeTruthy();
       });
 
-      it('should fail from string containing empty transitions', () => {
-        const obj = { history: initState, transitions: [] };
-        const persistedObj = JSON.stringify(obj);
-        const result = StateMachine.create<State, Event>(persistedObj);
+      it('should fail from object containing empty transitions', () => {
+        const obj = { history: initialState, transitions: [] };
+        const result = StateMachine.fromJson<State, Event>(obj);
         expect(result.isErr()).toBeTruthy();
       });
 
-      it('should fail from string containing empty history', () => {
-        const obj: Prisma.JsonValue = { history: [], transitions: transitions };
-        const persistedObj = JSON.stringify(obj);
-        const result = StateMachine.create<State, Event>(persistedObj);
+      it('should fail from object containing empty history', () => {
+        const obj = { history: [], transitions: transitions };
+        const result = StateMachine.fromJson<State, Event>(obj);
         expect(result.isErr()).toBeTruthy();
       });
 
-      it('should fail from string containing history without strings', () => {
+      it('should fail from object containing history without strings', () => {
         const obj = { history: ['draft', {}], transitions: transitions };
-        const persistedObj = JSON.stringify(obj);
-        const result = StateMachine.create<State, Event>(persistedObj);
+        const result = StateMachine.fromJson<State, Event>(obj);
         expect(result.isErr()).toBeTruthy();
       });
 
-      it('should fail from string containing transitions with invalid structure', () => {
+      it('should fail from object containing transitions with invalid structure', () => {
         const obj = {
-          history: initState,
+          history: initialState,
           transitions: [{ from: 'draft', to: 'active' }],
         };
-        const persistedObj = JSON.stringify(obj);
-        const result = StateMachine.create<State, Event>(persistedObj);
+        const result = StateMachine.fromJson<State, Event>(obj);
         expect(result.isErr()).toBeTruthy();
       });
 
-      it('should fail from string containing transitions with invalid type', () => {
+      it('should fail from object containing transitions with invalid type', () => {
         const obj = {
-          history: initState,
+          history: initialState,
           transitions: [{ from: 'draft', cause: {}, to: 'active' }],
         };
-        const persistedObj = JSON.stringify(obj);
-        const result = StateMachine.create<State, Event>(persistedObj);
+        const result = StateMachine.fromJson<State, Event>(obj);
         expect(result.isErr()).toBeTruthy();
       });
     });
