@@ -2,7 +2,11 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { PrismaService } from '@prisma-utils/nestjs-prisma';
-import { createValidationPipe } from '@trackyourhealth/api/common/util';
+import {
+  createValidationPipe,
+  DataTransformerInterceptor,
+  ExceptionInterceptor,
+} from '@trackyourhealth/api/common/util';
 import {
   ApiInstrumentDataModule,
   ApiInstrumentEvaluationService,
@@ -49,8 +53,12 @@ describe('ApiInstrumentFeature', () => {
       .useValue(kratosMock.guard)
       .compile();
 
-    app = module.createNestApplication();
+    app = module.createNestApplication({ logger: false });
     app.useGlobalPipes(createValidationPipe());
+    app.useGlobalInterceptors(
+      new DataTransformerInterceptor(),
+      new ExceptionInterceptor(),
+    );
     await app.init();
   });
 
@@ -72,7 +80,6 @@ describe('ApiInstrumentFeature', () => {
       instrumentCrudMock.count.mockRejectedValueOnce(dbConnectionError);
       expect.assertions(5);
       const response = await request(app.getHttpServer()).get(baseRoute);
-      // FIXME: try-catch-block is missing in crud service
       expect(response.status).toStrictEqual(HttpStatus.INTERNAL_SERVER_ERROR);
       expect(instrumentCrudMock.findMany).toBeCalledTimes(1);
       expect(instrumentCrudMock.findMany).toBeCalledWith(defaultQueryValues);
@@ -89,26 +96,6 @@ describe('ApiInstrumentFeature', () => {
       expect(instrumentCrudMock.create).toBeCalledTimes(0);
     });
   });
-
-  /* it('events should be thrown', async () => {
-    const result = { name: 'test name' };
-    expect.assertions(6);
-    evaluationMock.evaluateInstrument.mockRejectedValueOnce(
-      new Error('evaluation error'),
-    );
-    instrumentCrudMock.create.mockResolvedValueOnce(result);
-    const response = await request(app.getHttpServer())
-      .post(baseRoute)
-      .send({ answers: result });
-    expect(response.status).toStrictEqual(HttpStatus.CREATED);
-    expect(response.body).toStrictEqual(result);
-    expect(instrumentCrudMock.create).toBeCalledTimes(1);
-    expect(instrumentCrudMock.create).toBeCalledWith({
-      data: result,
-    });
-    expect(evaluationMock.evaluateInstrument).toBeCalledTimes(1);
-    expect(evaluationMock.evaluateInstrument).toBeCalledWith(result);
-  }); */
 
   afterAll(async () => {
     await app.close();
