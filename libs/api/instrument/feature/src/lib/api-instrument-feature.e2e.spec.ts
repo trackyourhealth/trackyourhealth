@@ -2,16 +2,15 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { PrismaService } from '@prisma-utils/nestjs-prisma';
-import { getValidationPipe } from '@trackyourhealth/api/common/util';
+import { createValidationPipe } from '@trackyourhealth/api/common/util';
 import {
   ApiInstrumentDataModule,
   ApiInstrumentEvaluationService,
 } from '@trackyourhealth/api/instrument/data';
 import { KratosGuard } from '@trackyourhealth/api/kratos/util';
 import {
-  dbConnectionError,
-  defaultQueryValues,
   instrumentCrudMock,
+  internalServerErrorFixture,
   kratosMock,
 } from '@trackyourhealth/api/testing/util';
 import * as request from 'supertest';
@@ -22,8 +21,16 @@ const evaluationMock = {
   evaluateInstrument: jest.fn(),
 };
 
+const defaultQueryValues = {
+  orderBy: [{ id: 'asc' }],
+  skip: 0,
+  take: 20,
+};
+const dbConnectionError = internalServerErrorFixture._unsafeUnwrapErr();
+
 describe('ApiInstrumentFeature', () => {
-  const baseRoute = '/instruments';
+  const uuidv4 = '13d03587-5896-41fa-8dc0-7214200cf48f';
+  const baseRoute = `/studies/${uuidv4}/instruments`;
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -42,8 +49,8 @@ describe('ApiInstrumentFeature', () => {
       .useValue(kratosMock.guard)
       .compile();
 
-    app = module.createNestApplication({ logger: false });
-    app.useGlobalPipes(getValidationPipe());
+    app = module.createNestApplication();
+    app.useGlobalPipes(createValidationPipe());
     await app.init();
   });
 
@@ -65,6 +72,7 @@ describe('ApiInstrumentFeature', () => {
       instrumentCrudMock.count.mockRejectedValueOnce(dbConnectionError);
       expect.assertions(5);
       const response = await request(app.getHttpServer()).get(baseRoute);
+      // FIXME: try-catch-block is missing in crud service
       expect(response.status).toStrictEqual(HttpStatus.INTERNAL_SERVER_ERROR);
       expect(instrumentCrudMock.findMany).toBeCalledTimes(1);
       expect(instrumentCrudMock.findMany).toBeCalledWith(defaultQueryValues);

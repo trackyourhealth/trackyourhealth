@@ -12,6 +12,7 @@ import { IsISO8601 } from 'class-validator';
 import { IsObject } from 'class-validator';
 import { IsBoolean } from 'class-validator';
 import { IsOptional } from 'class-validator';
+import { IsDefined } from 'class-validator';
 
 export class StudyInput {
   @ApiProperty()
@@ -50,12 +51,17 @@ export class StudyInput {
   @IsOptional()
   @IsISO8601()
   endsAt?: Date;
+
+  @ApiProperty()
+  @IsDefined()
+  instruments!: unknown;
 }
 
 export class CreateStudyInput extends OmitType(StudyInput, [
   'id',
   'createdAt',
   'updatedAt',
+  'instruments',
 ] as const) {}
 
 export class UpdateStudyInput extends PartialType(CreateStudyInput) {}

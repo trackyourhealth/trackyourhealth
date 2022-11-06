@@ -31,8 +31,11 @@ export class ApiInstrumentDataService {
     return result;
   }
 
-  async createInstrument(dto: CreateInstrumentDto) {
-    const data: Prisma.InstrumentCreateInput = dto;
+  async createInstrument(dto: CreateInstrumentDto, studyId: string) {
+    const data: Prisma.InstrumentCreateInput = {
+      ...dto,
+      study: { connect: { id: studyId } },
+    };
 
     const result = await this.crudService.create(data);
     return result;
@@ -47,14 +50,6 @@ export class ApiInstrumentDataService {
 
   async deleteInstrument(id: string) {
     const result = await this.crudService.delete(id);
-    return result;
-  }
-
-  async saveAnswers(
-    answers: Prisma.InstrumentCreateInput,
-  ): Promise<Instrument> {
-    const result = answers as Instrument;
-    this.eventEmitter.emitAsync('instrument.created', result);
     return result;
   }
 }

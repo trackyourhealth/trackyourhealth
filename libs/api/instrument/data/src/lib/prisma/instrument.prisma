@@ -1,7 +1,9 @@
 model Instrument {
   ...id
 
+  ///@Relation()
   study Study @relation(fields: [studyId], references: [id])
+  ///@RelationId()
   studyId String
 
   name String

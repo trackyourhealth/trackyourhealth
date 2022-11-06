@@ -2,8 +2,8 @@ import { Test } from '@nestjs/testing';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ApiInstrumentDataModule } from '@trackyourhealth/api/instrument/data';
 
+import { ApiInstrumentFeatureModule } from '../api-instrument-feature.module';
 import { ApiInstrumentFeatureController } from './api-instrument-feature.controller';
-import { ApiInstrumentFeatureModule } from './api-instrument-feature.module';
 
 describe('ApiInstrumentFeatureController', () => {
   let controller: ApiInstrumentFeatureController;

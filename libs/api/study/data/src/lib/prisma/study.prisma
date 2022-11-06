@@ -9,6 +9,8 @@ model Study {
 
   startsAt DateTime @default(now())
   endsAt DateTime?
+  ///@Relation()
+  instruments Instrument[]
 
   @@map("studies")
 }
