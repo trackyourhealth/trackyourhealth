@@ -3,13 +3,15 @@ import { err, Result } from 'neverthrow';
 
 import { StateMachine, Transition } from './state.machine';
 
-export type State = 'active' | 'draft' | 'retired';
+const ALL_STATES = ['active', 'draft', 'retired'] as const;
+type ALL_STATES_LIST_TYPE = typeof ALL_STATES;
+export type State = ALL_STATES_LIST_TYPE[number];
+export const createStates = (): State[] => [...ALL_STATES];
 
-export const createStates = (): State[] => ['active', 'draft', 'retired'];
-
-export type Event = 'publish' | 'redraft' | 'retire';
-
-export const createEvents = (): Event[] => ['publish', 'redraft', 'retire'];
+const ALL_EVENTS = ['publish', 'redraft', 'retire'] as const;
+type ALL_EVENTS_LIST_TYPE = typeof ALL_EVENTS;
+export type Event = ALL_EVENTS_LIST_TYPE[number];
+export const createEvents = (): Event[] => [...ALL_EVENTS];
 
 export const createTransitions = (): Transition<State, Event>[] => [
   { from: 'draft', cause: 'publish', to: 'active' },
