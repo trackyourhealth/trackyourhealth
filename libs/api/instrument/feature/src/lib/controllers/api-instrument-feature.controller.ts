@@ -26,9 +26,9 @@ import { Result } from 'neverthrow';
 import {
   CreateInstrumentRequest,
   UpdateInstrumentRequest,
-} from './data/requests';
+} from '../data/requests';
 
-@Controller('instruments')
+@Controller('studies/:studyId/instruments')
 export class ApiInstrumentFeatureController {
   constructor(
     private readonly apiInstrumentDataService: ApiInstrumentDataService,
@@ -83,16 +83,22 @@ export class ApiInstrumentFeatureController {
   @Post()
   async createInstrument(
     @Body() input: CreateInstrumentRequest,
+    @UUIDParam('studyId') studyId: string,
   ): Promise<Result<Instrument, Error>> {
     const dto: CreateInstrumentDto = {
       name: input.data.name,
       title: input.data.title,
       description: input.data.description,
-      questionnaire: input.data.questionnaire,
-      evaluator: input.data.evaluator,
+      content: input.data.content,
+      evaluations: input.data.evaluations,
+      state: input.data.state,
+      schedule: input.data.schedule,
     };
 
-    const result = await this.apiInstrumentDataService.createInstrument(dto);
+    const result = await this.apiInstrumentDataService.createInstrument(
+      dto,
+      studyId,
+    );
     return result;
   }
 
@@ -114,8 +120,8 @@ export class ApiInstrumentFeatureController {
       name: input.data.name,
       title: input.data.title,
       description: input.data.description,
-      questionnaire: input.data.questionnaire,
-      evaluator: input.data.evaluator,
+      content: input.data.content,
+      evaluations: input.data.evaluations,
     };
 
     const result = await this.apiInstrumentDataService.updateInstrument(

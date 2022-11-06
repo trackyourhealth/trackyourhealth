@@ -43,8 +43,10 @@ model Study {
 
   isActive Boolean @default(false)
 
-  startsAt DateTime  @default(now())
-  endsAt   DateTime?
+  startsAt    DateTime     @default(now())
+  endsAt      DateTime?
+  ///@Relation()
+  instruments Instrument[]
 
   @@map("studies")
 }
@@ -57,12 +59,20 @@ model Instrument {
   ///@Omit()
   updatedAt DateTime @updatedAt
 
+  ///@Relation()
+  study   Study  @relation(fields: [studyId], references: [id])
+  ///@RelationId()
+  studyId String
+
   name        String
   title       Json   @default("{}")
   description Json   @default("{}")
 
-  questionnaire Json @default("{}")
-  evaluator     Json @default("{}")
+  content     Json
+  evaluations Json @default("{}")
+  state       Json @default("{}")
+
+  schedule Json @default("{}")
 
   @@map("instruments")
 }

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ApiInstrumentDataModule } from '@trackyourhealth/api/instrument/data';
 
-import { ApiInstrumentFeatureController } from './api-instrument-feature.controller';
+import { ApiInstrumentFeatureController } from './controllers/api-instrument-feature.controller';
 
 @Module({
   imports: [ApiInstrumentDataModule],
