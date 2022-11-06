@@ -1,4 +1,10 @@
-import { Event, State, transitions } from './machine.config';
+import {
+  createEvents,
+  createStates,
+  createTransitions,
+  Event,
+  State,
+} from './instrument.machine';
 import { StateMachine } from './state.machine';
 
 describe('StateMachine', () => {
@@ -6,7 +12,7 @@ describe('StateMachine', () => {
   const initialState: State[] = ['draft'];
 
   beforeEach(() => {
-    machine = new StateMachine<State, Event>(initialState, transitions);
+    machine = new StateMachine<State, Event>(initialState, createTransitions());
   });
 
   it('should be defined', () => {
@@ -24,6 +30,18 @@ describe('StateMachine', () => {
       expect(machine.getState()).toStrictEqual<State>('draft');
       expect(machine.transition('publish')).toBeTruthy();
       expect(machine.getState()).toStrictEqual<State>('active');
+    });
+
+    it('should allow all instrument transitions', () => {
+      expect(machine.getState()).toStrictEqual<State>('draft');
+      expect(machine.transition('publish')).toBeTruthy();
+      expect(machine.getState()).toStrictEqual<State>('active');
+      expect(machine.transition('redraft')).toBeTruthy();
+      expect(machine.getState()).toStrictEqual<State>('draft');
+      expect(machine.transition('publish')).toBeTruthy();
+      expect(machine.getState()).toStrictEqual<State>('active');
+      expect(machine.transition('retire')).toBeTruthy();
+      expect(machine.getState()).toStrictEqual<State>('retired');
     });
   });
 
@@ -50,10 +68,13 @@ describe('StateMachine', () => {
   });
 
   describe('persistance', () => {
+    const parseSM = (sm: object) =>
+      StateMachine.create<State, Event>(sm, createStates(), createEvents());
+
     describe('success', () => {
       it('should parse from correct object', () => {
         const storedSM = { ...machine };
-        const result = StateMachine.fromJson<State, Event>(storedSM);
+        const result = parseSM(storedSM);
         expect(result).toBeDefined();
         expect(result.isOk()).toBeTruthy();
         const stateMachine = result._unsafeUnwrap();
@@ -68,55 +89,53 @@ describe('StateMachine', () => {
     });
 
     describe('fail', () => {
-      it('should fail from empty string', () => {
-        const result = StateMachine.fromJson<State, Event>('');
-        expect(result.isErr()).toBeTruthy();
-      });
-
       it('should fail from empty object', () => {
-        const result = StateMachine.fromJson<State, Event>({});
+        const result = parseSM({});
         expect(result.isErr()).toBeTruthy();
       });
 
       it('should fail from object not containing transitions', () => {
         const obj = { history: initialState };
-        const result = StateMachine.fromJson<State, Event>(obj);
+        const result = parseSM(obj);
         expect(result.isErr()).toBeTruthy();
       });
 
       it('should fail from object not containing history', () => {
-        const obj = { transitions: transitions };
-        const result = StateMachine.fromJson<State, Event>(obj);
+        const obj = { transitions: createTransitions() };
+        const result = parseSM(obj);
         expect(result.isErr()).toBeTruthy();
       });
 
       it('should fail from object not containing history as array', () => {
-        const obj = { history: 'fail', transitions: transitions };
-        const result = StateMachine.fromJson<State, Event>(obj);
+        const obj = { history: 'fail', transitions: createTransitions() };
+        const result = parseSM(obj);
         expect(result.isErr()).toBeTruthy();
       });
 
       it('should fail from object not containing transitions as array', () => {
         const obj = { history: initialState, transitions: 'fail' };
-        const result = StateMachine.fromJson<State, Event>(obj);
+        const result = parseSM(obj);
         expect(result.isErr()).toBeTruthy();
       });
 
       it('should fail from object containing empty transitions', () => {
         const obj = { history: initialState, transitions: [] };
-        const result = StateMachine.fromJson<State, Event>(obj);
+        const result = parseSM(obj);
         expect(result.isErr()).toBeTruthy();
       });
 
       it('should fail from object containing empty history', () => {
-        const obj = { history: [], transitions: transitions };
-        const result = StateMachine.fromJson<State, Event>(obj);
+        const obj = { history: [], transitions: createTransitions() };
+        const result = parseSM(obj);
         expect(result.isErr()).toBeTruthy();
       });
 
       it('should fail from object containing history without strings', () => {
-        const obj = { history: ['draft', {}], transitions: transitions };
-        const result = StateMachine.fromJson<State, Event>(obj);
+        const obj = {
+          history: ['draft', {}],
+          transitions: createTransitions(),
+        };
+        const result = parseSM(obj);
         expect(result.isErr()).toBeTruthy();
       });
 
@@ -125,7 +144,7 @@ describe('StateMachine', () => {
           history: initialState,
           transitions: [{ from: 'draft', to: 'active' }],
         };
-        const result = StateMachine.fromJson<State, Event>(obj);
+        const result = parseSM(obj);
         expect(result.isErr()).toBeTruthy();
       });
 
@@ -134,7 +153,7 @@ describe('StateMachine', () => {
           history: initialState,
           transitions: [{ from: 'draft', cause: {}, to: 'active' }],
         };
-        const result = StateMachine.fromJson<State, Event>(obj);
+        const result = parseSM(obj);
         expect(result.isErr()).toBeTruthy();
       });
     });
