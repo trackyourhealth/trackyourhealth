@@ -91,7 +91,6 @@ export class ApiInstrumentFeatureController {
       description: input.data.description,
       content: input.data.content,
       evaluations: input.data.evaluations,
-      state: input.data.state,
       schedule: input.data.schedule,
     };
 

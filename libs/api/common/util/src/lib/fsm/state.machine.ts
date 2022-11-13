@@ -53,7 +53,7 @@ export class StateMachine<S, E> {
 
   matchesSome(states: S[]): boolean {
     const state = this.getState();
-    return states.some((s) => s === state);
+    return states.includes(state);
   }
 
   getHistory(): S[] {
@@ -64,42 +64,87 @@ export class StateMachine<S, E> {
     return [...this.transitions];
   }
 
-  static create<S, E>(
-    stateMachine: object,
+  serialize(): object {
+    const sm: StateMachineDTO<S, E> = {
+      history: this.getHistory(),
+      transitions: this.getTransitions(),
+    };
+    return sm;
+  }
+
+  private static validateHistory<S, E>(
+    sm: StateMachineDTO<S, E>,
     states: S[],
-    events: E[],
-  ): Result<StateMachine<S, E>, Error> {
-    if (states.length === 0 || events.length === 0) {
-      return err(new Error('States and events must be non-empty'));
+  ): Result<StateMachineDTO<S, E>, Error> {
+    const history = sm.history;
+    if (history.length === 0) {
+      return err(new Error('History must be non-empty arrays'));
     }
-    const sm = stateMachine as StateMachineDTO<S, E>;
-    if (
-      !sm.history ||
-      !sm.transitions ||
-      !Array.isArray(sm.history) ||
-      !Array.isArray(sm.transitions)
-    ) {
-      return err(new Error('History and transitions must be defined arrays'));
-    }
-    if (sm.history.length === 0 || sm.transitions.length === 0) {
-      return err(new Error('History and transitions must be non-empty arrays'));
-    }
-    for (const state of sm.history) {
-      if (!states.some((s) => state === s)) {
+    for (const state of history) {
+      if (!states.includes(state)) {
         return err(new Error(`History contains invalid state ${state}`));
       }
     }
-    for (const transition of sm.transitions) {
+    return ok(sm);
+  }
+
+  private static validateTransitions<S, E>(
+    sm: StateMachineDTO<S, E>,
+    states: S[],
+    events: E[],
+  ): Result<StateMachineDTO<S, E>, Error> {
+    const transitions = sm.transitions;
+    if (transitions.length === 0) {
+      return err(new Error('Transitions must be non-empty arrays'));
+    }
+    for (const transition of transitions) {
       if (
-        !states.some((s) => transition.from === s) ||
-        !states.some((s) => transition.to === s) ||
-        !events.some((e) => transition.cause === e)
+        !states.includes(transition.from) ||
+        !states.includes(transition.to) ||
+        !events.includes(transition.cause)
       ) {
         return err(
           new Error(`Transitions contain invalid value ${transition}`),
         );
       }
     }
-    return ok(new StateMachine(sm.history, sm.transitions));
+    return ok(sm);
+  }
+
+  private static validateStructure<S, E>(
+    stateMachine: object,
+  ): Result<StateMachineDTO<S, E>, Error> {
+    const sm = stateMachine as StateMachineDTO<S, E>;
+    const validStructure =
+      sm.history &&
+      sm.transitions &&
+      Array.isArray(sm.history) &&
+      Array.isArray(sm.transitions);
+    return validStructure
+      ? ok(sm)
+      : err(new Error('History and transitions must be defined arrays'));
+  }
+
+  static validate<S, E>(
+    stateMachine: object,
+    states: S[],
+    events: E[],
+  ): Result<StateMachineDTO<S, E>, Error> {
+    if (states.length === 0 || events.length === 0) {
+      return err(new Error('States and events must be non-empty'));
+    }
+    return this.validateStructure<S, E>(stateMachine)
+      .andThen((fsm) => this.validateHistory(fsm, states))
+      .andThen((fsm) => this.validateTransitions(fsm, states, events));
+  }
+
+  static create<S, E>(
+    stateMachine: object,
+    states: S[],
+    events: E[],
+  ): Result<StateMachine<S, E>, Error> {
+    return this.validate(stateMachine, states, events).map(
+      (sm) => new StateMachine(sm.history, sm.transitions),
+    );
   }
 }
