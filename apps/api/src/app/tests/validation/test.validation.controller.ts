@@ -28,7 +28,6 @@ class UpdateTestRequest extends GenerateDataRequest(UpdateTestInput) {}
 export class ValidationTestController {
   @Post()
   postData(@Body() input: CreateTestRequest) {
-    console.log(input);
     return 'ok';
   }
 }
