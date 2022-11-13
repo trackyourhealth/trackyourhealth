@@ -28,7 +28,7 @@ describe('StateMachine', () => {
     expect(machine).toBeDefined();
   });
 
-  describe('transitions', () => {
+  describe('transition', () => {
     it('should not transition with incorrect event', () => {
       expect(machine.getState()).toStrictEqual<State>('draft');
       expect(machine.transition('retire')).toBeFalsy();
@@ -54,7 +54,7 @@ describe('StateMachine', () => {
     });
   });
 
-  describe('history', () => {
+  describe('getHistory', () => {
     it('should not add state after incorrect event', () => {
       expect(machine.getHistory()).toStrictEqual<State[]>(initialState);
       expect(machine.transition('retire')).toBeFalsy();
@@ -76,95 +76,117 @@ describe('StateMachine', () => {
     });
   });
 
-  describe('persistance', () => {
-    const parseSM = (sm: object) =>
-      StateMachine.create<State, Event>(sm, createStates(), createEvents());
+  describe('validate', () => {
+    const validateSM = (sm: object) =>
+      StateMachine.validate<State, Event>(sm, createStates(), createEvents());
 
-    describe('success', () => {
-      it('should parse from correct object', () => {
-        const storedSM = { ...machine };
-        const result = parseSM(storedSM);
-        expect(result).toBeDefined();
-        expect(result.isOk()).toBeTruthy();
-        const stateMachine = result._unsafeUnwrap();
-        expect(stateMachine.getState()).toStrictEqual(machine.getState());
-        expect(stateMachine.getHistory()).toStrictEqual(machine.getHistory());
-        expect(stateMachine.transition('publish')).toBeTruthy();
-        expect(stateMachine.getHistory()).toStrictEqual<State[]>([
-          'draft',
-          'active',
-        ]);
-      });
+    it('should return DTO with correct object', () => {
+      const storedSM = machine.serialize();
+      const result = validateSM(storedSM);
+      expect(result).toBeDefined();
+      expect(result.isOk()).toBeTruthy();
+      const stateMachine = result._unsafeUnwrap();
+      expect(stateMachine.history).toStrictEqual(machine.getHistory());
+      expect(stateMachine.transitions).toStrictEqual(machine.getTransitions());
     });
 
-    describe('fail', () => {
-      it('should fail from empty object', () => {
-        const result = parseSM({});
-        expect(result.isErr()).toBeTruthy();
-      });
+    it('should return Error with empty object', () => {
+      const result = validateSM({});
+      expect(result.isErr()).toBeTruthy();
+    });
 
-      it('should fail from object not containing transitions', () => {
-        const obj = { history: initialState };
-        const result = parseSM(obj);
-        expect(result.isErr()).toBeTruthy();
-      });
+    it('should return Error with object not containing transitions', () => {
+      const obj = { history: initialState };
+      const result = validateSM(obj);
+      expect(result.isErr()).toBeTruthy();
+    });
 
-      it('should fail from object not containing history', () => {
-        const obj = { transitions: createTransitions() };
-        const result = parseSM(obj);
-        expect(result.isErr()).toBeTruthy();
-      });
+    it('should return Error with object not containing history', () => {
+      const obj = { transitions: createTransitions() };
+      const result = validateSM(obj);
+      expect(result.isErr()).toBeTruthy();
+    });
 
-      it('should fail from object not containing history as array', () => {
-        const obj = { history: 'fail', transitions: createTransitions() };
-        const result = parseSM(obj);
-        expect(result.isErr()).toBeTruthy();
-      });
+    it('should return Error with object not containing history as array', () => {
+      const obj = { history: 'fail', transitions: createTransitions() };
+      const result = validateSM(obj);
+      expect(result.isErr()).toBeTruthy();
+    });
 
-      it('should fail from object not containing transitions as array', () => {
-        const obj = { history: initialState, transitions: 'fail' };
-        const result = parseSM(obj);
-        expect(result.isErr()).toBeTruthy();
-      });
+    it('should return Error with object not containing transitions as array', () => {
+      const obj = { history: initialState, transitions: 'fail' };
+      const result = validateSM(obj);
+      expect(result.isErr()).toBeTruthy();
+    });
 
-      it('should fail from object containing empty transitions', () => {
-        const obj = { history: initialState, transitions: [] };
-        const result = parseSM(obj);
-        expect(result.isErr()).toBeTruthy();
-      });
+    it('should return Error with object containing empty transitions', () => {
+      const obj = { history: initialState, transitions: [] };
+      const result = validateSM(obj);
+      expect(result.isErr()).toBeTruthy();
+    });
 
-      it('should fail from object containing empty history', () => {
-        const obj = { history: [], transitions: createTransitions() };
-        const result = parseSM(obj);
-        expect(result.isErr()).toBeTruthy();
-      });
+    it('should return Error with object containing empty history', () => {
+      const obj = { history: [], transitions: createTransitions() };
+      const result = validateSM(obj);
+      expect(result.isErr()).toBeTruthy();
+    });
 
-      it('should fail from object containing history without strings', () => {
-        const obj = {
-          history: ['draft', {}],
-          transitions: createTransitions(),
-        };
-        const result = parseSM(obj);
-        expect(result.isErr()).toBeTruthy();
-      });
+    it('should return Error with object containing history without strings', () => {
+      const obj = {
+        history: ['draft', {}],
+        transitions: createTransitions(),
+      };
+      const result = validateSM(obj);
+      expect(result.isErr()).toBeTruthy();
+    });
 
-      it('should fail from object containing transitions with invalid structure', () => {
-        const obj = {
-          history: initialState,
-          transitions: [{ from: 'draft', to: 'active' }],
-        };
-        const result = parseSM(obj);
-        expect(result.isErr()).toBeTruthy();
-      });
+    it('should return Error with object containing transitions with invalid structure', () => {
+      const obj = {
+        history: initialState,
+        transitions: [{ from: 'draft', to: 'active' }],
+      };
+      const result = validateSM(obj);
+      expect(result.isErr()).toBeTruthy();
+    });
 
-      it('should fail from object containing transitions with invalid type', () => {
-        const obj = {
-          history: initialState,
-          transitions: [{ from: 'draft', cause: {}, to: 'active' }],
-        };
-        const result = parseSM(obj);
-        expect(result.isErr()).toBeTruthy();
-      });
+    it('should return Error with object containing transitions with invalid type', () => {
+      const obj = {
+        history: initialState,
+        transitions: [{ from: 'draft', cause: {}, to: 'active' }],
+      };
+      const result = validateSM(obj);
+      expect(result.isErr()).toBeTruthy();
+    });
+  });
+
+  describe('create', () => {
+    it('should return StateMachine after successful validation', () => {
+      const storedSM = machine.serialize();
+      const result = StateMachine.create<State, Event>(
+        storedSM,
+        createStates(),
+        createEvents(),
+      );
+      expect(result).toBeDefined();
+      expect(result.isOk()).toBeTruthy();
+      const stateMachine = result._unsafeUnwrap();
+      expect(stateMachine.getState()).toStrictEqual(machine.getState());
+      expect(stateMachine.getHistory()).toStrictEqual(machine.getHistory());
+      expect(stateMachine.transition('publish')).toBeTruthy();
+      expect(stateMachine.getHistory()).toStrictEqual<State[]>([
+        'draft',
+        'active',
+      ]);
+    });
+
+    it('should return Error after failed validation', () => {
+      const emptySM = {};
+      const result = StateMachine.create<State, Event>(
+        emptySM,
+        createStates(),
+        createEvents(),
+      );
+      expect(result.isErr()).toBeTruthy();
     });
   });
 });
