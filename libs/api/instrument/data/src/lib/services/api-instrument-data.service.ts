@@ -7,6 +7,7 @@ import {
   CreateInstrumentDto,
   UpdateInstrumentDto,
 } from '../data/dtos/instrument.dto';
+import { createStateMachine } from '../data/fsm/instrument.machine';
 import { InstrumentCrudService } from './instrument.crud.service';
 
 @Injectable()
@@ -34,6 +35,7 @@ export class ApiInstrumentDataService {
   async createInstrument(dto: CreateInstrumentDto, studyId: string) {
     const data: Prisma.InstrumentCreateInput = {
       ...dto,
+      state: createStateMachine().serialize(),
       study: { connect: { id: studyId } },
     };
 

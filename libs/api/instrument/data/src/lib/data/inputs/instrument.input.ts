@@ -68,6 +68,7 @@ export class CreateInstrumentInput extends OmitType(InstrumentInput, [
   'updatedAt',
   'study',
   'studyId',
+  'state',
 ] as const) {}
 
 export class UpdateInstrumentInput extends PartialType(CreateInstrumentInput) {}

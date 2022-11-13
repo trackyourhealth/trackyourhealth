@@ -12,6 +12,7 @@ model Instrument {
 
   content Json
   evaluations Json @default("{}")
+  ///@Omit()
   state Json @default("{}")
 
   schedule Json @default("{}")

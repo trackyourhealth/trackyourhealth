@@ -1,11 +1,20 @@
-import {
-  createEvents,
-  createStates,
-  createTransitions,
-  Event,
-  State,
-} from './instrument.machine';
-import { StateMachine } from './state.machine';
+import { StateMachine, Transition } from './state.machine';
+
+const ALL_STATES = ['active', 'draft', 'retired'] as const;
+type ALL_STATES_LIST_TYPE = typeof ALL_STATES;
+type State = ALL_STATES_LIST_TYPE[number];
+const createStates = (): State[] => [...ALL_STATES];
+
+const ALL_EVENTS = ['publish', 'redraft', 'retire'] as const;
+type ALL_EVENTS_LIST_TYPE = typeof ALL_EVENTS;
+type Event = ALL_EVENTS_LIST_TYPE[number];
+const createEvents = (): Event[] => [...ALL_EVENTS];
+
+const createTransitions = (): Transition<State, Event>[] => [
+  { from: 'draft', cause: 'publish', to: 'active' },
+  { from: 'active', cause: 'retire', to: 'retired' },
+  { from: 'active', cause: 'redraft', to: 'draft' },
+];
 
 describe('StateMachine', () => {
   let machine: StateMachine<State, Event>;
