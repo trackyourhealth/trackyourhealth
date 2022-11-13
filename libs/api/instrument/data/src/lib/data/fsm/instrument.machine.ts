@@ -1,7 +1,6 @@
 import { Instrument } from '@prisma/client';
+import { StateMachine, Transition } from '@trackyourhealth/api/common/util';
 import { err, Result } from 'neverthrow';
-
-import { StateMachine, Transition } from './state.machine';
 
 const ALL_STATES = ['active', 'draft', 'retired'] as const;
 type ALL_STATES_LIST_TYPE = typeof ALL_STATES;
