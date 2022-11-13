@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { Instrument, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { ParsedQueryModel } from '@prisma-utils/nestjs-request-parser';
 
 import {
