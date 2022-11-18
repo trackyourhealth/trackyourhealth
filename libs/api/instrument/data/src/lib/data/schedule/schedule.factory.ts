@@ -1,14 +1,14 @@
 import {
   Duration,
-  Period,
-  Range,
   TimingRepeat,
 } from '@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4';
 
 import {
   DayOfWeek,
   Decimal,
+  Period,
   PositiveInt,
+  Range,
   UnsignedInt,
   WhenCode,
 } from './fhir.types';
@@ -21,8 +21,16 @@ export class Schedule {
     this.timing = { ...timing };
   }
 
-  withBoundsDuration(duration: Duration) {
-    this.timing.boundsDuration = duration;
+  withBoundsDuration(
+    duration: Decimal,
+    unit: TimingRepeat.DurationUnitEnum,
+    comparator?: Duration.ComparatorEnum,
+  ) {
+    this.timing.boundsDuration = {
+      value: duration,
+      code: unit,
+      comparator: comparator,
+    };
     this.timing.boundsPeriod = undefined;
     this.timing.boundsRange = undefined;
     return this;
@@ -38,11 +46,22 @@ export class Schedule {
   withBoundsRange(range: Range) {
     this.timing.boundsDuration = undefined;
     this.timing.boundsPeriod = undefined;
-    this.timing.boundsRange = range;
+    this.timing.boundsRange = {
+      low: {
+        value: range.low?.value,
+        code: range.low?.unit,
+        comparator: range.low?.comparator,
+      },
+      high: {
+        value: range.high?.value,
+        code: range.high?.unit,
+        comparator: range.high?.comparator,
+      },
+    };
     return this;
   }
 
-  withCount(count: PositiveInt, max?: PositiveInt) {
+  withCount<T extends number>(count: PositiveInt<T>, max?: PositiveInt<T>) {
     this.timing.count = count;
     this.timing.countMax = max;
     return this;
@@ -59,7 +78,10 @@ export class Schedule {
     return this;
   }
 
-  withFrequency(frequency: PositiveInt, max?: PositiveInt) {
+  withFrequency<T extends number>(
+    frequency: PositiveInt<T>,
+    max?: PositiveInt<T>,
+  ) {
     this.timing.frequency = frequency;
     this.timing.frequencyMax = max;
     return this;
@@ -87,7 +109,7 @@ export class Schedule {
     return this;
   }
 
-  withWhen(when: WhenCode[], offset?: UnsignedInt) {
+  withWhen<T extends number>(when: WhenCode[], offset?: UnsignedInt<T>) {
     this.timing.timeOfDay = undefined;
     this.timing.when = when;
     this.timing.offset = offset;
