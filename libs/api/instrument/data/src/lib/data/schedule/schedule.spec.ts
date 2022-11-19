@@ -36,7 +36,7 @@ describe('Schedule', () => {
         expect(schedule.serialize()).toStrictEqual(dto);
       });
 
-      it('should not accept object with out of range count and undefined countMax', () => {
+      it('should reject object with out of range count and undefined countMax', () => {
         let dto = { count: MIN_POSITIVE_INT - 1 };
         let scheduleResult = Schedule.create(dto);
         expect(scheduleResult.isErr()).toBeTruthy();
@@ -45,19 +45,19 @@ describe('Schedule', () => {
         expect(scheduleResult.isErr()).toBeTruthy();
       });
 
-      it('should not accept object with invalid count and undefined countMax', () => {
+      it('should reject object with invalid count and undefined countMax', () => {
         const dto = { count: 'invalid' };
         const scheduleResult = Schedule.create(dto);
         expect(scheduleResult.isErr()).toBeTruthy();
       });
 
-      it('should not accept object with undefined count and valid countMax', () => {
+      it('should reject object with undefined count and valid countMax', () => {
         const dto = { countMax: MAX_POSITIVE_INT };
         const scheduleResult = Schedule.create(dto);
         expect(scheduleResult.isErr()).toBeTruthy();
       });
 
-      it('should not accept object with valid count and out of range countMax', () => {
+      it('should reject object with valid count and out of range countMax', () => {
         let dto = { count: MIN_POSITIVE_INT, countMax: MIN_POSITIVE_INT - 1 };
         let scheduleResult = Schedule.create(dto);
         expect(scheduleResult.isErr()).toBeTruthy();
@@ -66,13 +66,13 @@ describe('Schedule', () => {
         expect(scheduleResult.isErr()).toBeTruthy();
       });
 
-      it('should not accept object with valid count and invalid countMax', () => {
+      it('should reject object with valid count and invalid countMax', () => {
         const dto = { count: MIN_POSITIVE_INT, countMax: 'invalid' };
         const scheduleResult = Schedule.create(dto);
         expect(scheduleResult.isErr()).toBeTruthy();
       });
 
-      it('should not accept object with valid count being bigger than valid countMax', () => {
+      it('should reject object with valid count being bigger than valid countMax', () => {
         const dto = { count: MIN_POSITIVE_INT + 1, countMax: MIN_POSITIVE_INT };
         const scheduleResult = Schedule.create(dto);
         expect(scheduleResult.isErr()).toBeTruthy();
