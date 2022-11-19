@@ -6,7 +6,7 @@ import { Zero } from 'type-fest/source/numeric';
 export type Decimal = number;
 
 export const isNotInteger = (n: unknown): boolean =>
-  typeof n !== 'number' || !Number.isInteger(n);
+  typeof n !== 'number' || !Number.isSafeInteger(n);
 
 export type PositiveInt<T extends number> = T extends Zero
   ? never
@@ -18,7 +18,7 @@ export const outOfPositiveIntRange = (n: number): boolean =>
 
 export type UnsignedInt<T extends number> = NonNegativeInteger<T>;
 export const MIN_UNSIGNED_INT = 0;
-export const MAX_UNSIGNED_INT = 2147483647;
+export const MAX_UNSIGNED_INT = 2 ** 31 - 1;
 export const outOfUnsignedIntRange = (n: number): boolean =>
   n < MIN_UNSIGNED_INT || n > MAX_UNSIGNED_INT;
 
@@ -34,6 +34,8 @@ export const DaysOfWeek = [
 ] as const;
 type DaysOfWeekType = typeof DaysOfWeek;
 export type DayOfWeek = DaysOfWeekType[number];
+export const isNotDayOfWeek = (day: string): boolean =>
+  !DaysOfWeek.includes(day as DayOfWeek);
 
 // http://hl7.org/fhir/R4B/codesystem-event-timing.html
 // http://hl7.org/fhir/R4B/valueset-event-timing.html

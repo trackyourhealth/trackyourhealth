@@ -2,6 +2,7 @@ import { TimingRepeat } from '@smile-cdr/fhirts/dist/FHIR-R4/classes/timingRepea
 import { err, ok, Result } from 'neverthrow';
 
 import {
+  isNotDayOfWeek,
   isNotInteger,
   MAX_POSITIVE_INT,
   MIN_POSITIVE_INT,
@@ -9,6 +10,20 @@ import {
 } from './fhir.types';
 
 export class TimingRepeatValidator {
+  private static validateDayOfWeek(
+    timing: TimingRepeat,
+  ): Result<TimingRepeat, Error> {
+    const { dayOfWeek } = timing;
+    if (dayOfWeek !== undefined) {
+      for (const day of dayOfWeek) {
+        if (isNotDayOfWeek(day)) {
+          return err(new Error(`${day} is an invalid dayOfWeek-code`));
+        }
+      }
+    }
+    return ok(timing);
+  }
+
   private static validateCount(
     timing: TimingRepeat,
   ): Result<TimingRepeat, Error> {
@@ -20,7 +35,7 @@ export class TimingRepeatValidator {
     }
     if (count !== undefined) {
       if (isNotInteger(count)) {
-        return err(new Error('count must be a integer'));
+        return err(new Error('count must be an integer'));
       }
       if (outOfPositiveIntRange(count)) {
         return err(
@@ -31,7 +46,7 @@ export class TimingRepeatValidator {
       }
       if (countMax !== undefined) {
         if (isNotInteger(countMax)) {
-          return err(new Error('countMax must be a integer'));
+          return err(new Error('countMax must be an integer'));
         }
         if (outOfPositiveIntRange(countMax)) {
           return err(
@@ -49,6 +64,6 @@ export class TimingRepeatValidator {
   }
 
   static validate(scheduleDto: TimingRepeat): Result<TimingRepeat, Error> {
-    return this.validateCount(scheduleDto);
+    return this.validateCount(scheduleDto).andThen(this.validateDayOfWeek);
   }
 }
