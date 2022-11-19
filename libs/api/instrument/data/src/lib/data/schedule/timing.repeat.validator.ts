@@ -92,6 +92,47 @@ export class TimingRepeatValidator {
     return ok(timing);
   }
 
+  private static validateFrequency(
+    timing: TimingRepeat,
+  ): Result<TimingRepeat, Error> {
+    const { frequency, frequencyMax } = timing;
+    if (frequency === undefined && frequencyMax !== undefined) {
+      return err(
+        new Error('frequencyMax must not be defined if frequency is undefined'),
+      );
+    }
+    if (frequency !== undefined) {
+      if (isNotInteger(frequency)) {
+        return err(new Error('frequency must be an integer'));
+      }
+      if (outOfPositiveIntRange(frequency)) {
+        return err(
+          new Error(
+            `frequency must be between ${MIN_POSITIVE_INT} and ${MAX_POSITIVE_INT}`,
+          ),
+        );
+      }
+      if (frequencyMax !== undefined) {
+        if (isNotInteger(frequencyMax)) {
+          return err(new Error('frequencyMax must be an integer'));
+        }
+        if (outOfPositiveIntRange(frequencyMax)) {
+          return err(
+            new Error(
+              `frequencyMax must be between ${MIN_POSITIVE_INT} and ${MAX_POSITIVE_INT}`,
+            ),
+          );
+        }
+        if (frequency > frequencyMax) {
+          return err(
+            new Error('frequency must not be bigger than frequencyMax'),
+          );
+        }
+      }
+    }
+    return ok(timing);
+  }
+
   private static validateDayOfWeek(
     timing: TimingRepeat,
   ): Result<TimingRepeat, Error> {
@@ -109,6 +150,7 @@ export class TimingRepeatValidator {
   static validate(scheduleDto: TimingRepeat): Result<TimingRepeat, Error> {
     return this.validateCount(scheduleDto)
       .andThen(this.validateDuration)
+      .andThen(this.validateFrequency)
       .andThen(this.validateDayOfWeek);
   }
 }

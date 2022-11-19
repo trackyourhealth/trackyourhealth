@@ -184,6 +184,89 @@ describe('Schedule', () => {
       });
     });
 
+    describe('frequency', () => {
+      it('should accept object with valid frequency and undefined frequencyMax', () => {
+        const dto = { frequency: MIN_POSITIVE_INT };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isOk()).toBeTruthy();
+        const schedule = scheduleResult._unsafeUnwrap();
+        expect(schedule.serialize()).toStrictEqual(dto);
+      });
+
+      it('should accept object with valid frequency and valid frequencyMax', () => {
+        const dto = {
+          frequency: MIN_POSITIVE_INT,
+          frequencyMax: MAX_POSITIVE_INT,
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isOk()).toBeTruthy();
+        const schedule = scheduleResult._unsafeUnwrap();
+        expect(schedule.serialize()).toStrictEqual(dto);
+      });
+
+      it('should accept object with valid frequency and valid frequencyMax being equal', () => {
+        const dto = {
+          frequency: MIN_POSITIVE_INT,
+          frequencyMax: MIN_POSITIVE_INT,
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isOk()).toBeTruthy();
+        const schedule = scheduleResult._unsafeUnwrap();
+        expect(schedule.serialize()).toStrictEqual(dto);
+      });
+
+      it('should reject object with out of range frequency and undefined frequencyMax', () => {
+        let dto = { frequency: MIN_POSITIVE_INT - 1 };
+        let scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+        dto = { frequency: MAX_POSITIVE_INT + 1 };
+        scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with invalid frequency and undefined frequencyMax', () => {
+        const dto = { frequency: 'invalid' };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with undefined frequency and valid frequencyMax', () => {
+        const dto = { frequencyMax: MAX_POSITIVE_INT };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with valid frequency and out of range frequencyMax', () => {
+        let dto = {
+          frequency: MIN_POSITIVE_INT,
+          frequencyMax: MIN_POSITIVE_INT - 1,
+        };
+        let scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+        dto = {
+          frequency: MIN_POSITIVE_INT,
+          frequencyMax: MAX_POSITIVE_INT + 1,
+        };
+        scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with valid frequency and invalid frequencyMax', () => {
+        const dto = { frequency: MIN_POSITIVE_INT, frequencyMax: 'invalid' };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with valid frequency being bigger than valid frequencyMax', () => {
+        const dto = {
+          frequency: MIN_POSITIVE_INT + 1,
+          frequencyMax: MIN_POSITIVE_INT,
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+    });
+
     describe('dayOfWeek', () => {
       it('should accept object with empty dayOfWeek', () => {
         const dto = { dayOfWeek: [] };
