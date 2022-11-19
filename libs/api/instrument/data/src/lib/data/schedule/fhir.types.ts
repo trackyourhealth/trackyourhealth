@@ -10,6 +10,11 @@ export const isNotDurationUnit = (unit: string): boolean =>
     unit as TimingRepeat.DurationUnitEnum,
   );
 
+export const isNotPeriodUnit = (unit: string): boolean =>
+  !Object.values(TimingRepeat.PeriodUnitEnum).includes(
+    unit as TimingRepeat.PeriodUnitEnum,
+  );
+
 export const isNotInteger = (n: unknown): boolean =>
   typeof n !== 'number' || !Number.isSafeInteger(n);
 

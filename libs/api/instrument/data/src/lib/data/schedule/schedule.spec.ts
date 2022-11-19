@@ -267,6 +267,109 @@ describe('Schedule', () => {
       });
     });
 
+    describe('period', () => {
+      const validPeriod = 0.5;
+      const validPeriodUnit = TimingRepeat.PeriodUnitEnum.A;
+      const validPeriodMax = 34.75;
+
+      it('should reject object with undefined period and valid unit and undefined max', () => {
+        const dto = { periodUnit: validPeriodUnit };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with undefined period and undefined unit and valid max', () => {
+        const dto = { periodMax: validPeriodMax };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with valid period and undefined unit and undefined max', () => {
+        const dto = { period: validPeriod };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with valid period and invalid unit code and undefined max', () => {
+        const dto = { period: validPeriod, periodUnit: 'invalid' };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with valid period and invalid unit type and undefined max', () => {
+        const dto = {
+          period: validPeriod,
+          periodUnit: { key: 'invalid' },
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with invalid period and valid unit and undefined max', () => {
+        const dto = {
+          period: 'invalid',
+          periodUnit: validPeriodUnit,
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with valid period and valid unit and invalid max type', () => {
+        const dto = {
+          period: validPeriod,
+          periodUnit: validPeriodUnit,
+          periodMax: 'invalid',
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with valid period bigger than max and valid unit', () => {
+        const dto = {
+          period: validPeriod + 1,
+          periodUnit: validPeriodUnit,
+          periodMax: validPeriod,
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should accept object with valid period equal to max and valid unit', () => {
+        const dto = {
+          period: validPeriod,
+          periodUnit: validPeriodUnit,
+          periodMax: validPeriod,
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isOk()).toBeTruthy();
+        const schedule = scheduleResult._unsafeUnwrap();
+        expect(schedule.serialize()).toStrictEqual(dto);
+      });
+
+      it('should accept object with valid period and valid unit and undefined max', () => {
+        const dto = {
+          period: validPeriod,
+          periodUnit: validPeriodUnit,
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isOk()).toBeTruthy();
+        const schedule = scheduleResult._unsafeUnwrap();
+        expect(schedule.serialize()).toStrictEqual(dto);
+      });
+
+      it('should accept object with valid period and valid unit and valid max', () => {
+        const dto = {
+          period: validPeriod,
+          periodUnit: validPeriodUnit,
+          periodMax: validPeriodMax,
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isOk()).toBeTruthy();
+        const schedule = scheduleResult._unsafeUnwrap();
+        expect(schedule.serialize()).toStrictEqual(dto);
+      });
+    });
+
     describe('dayOfWeek', () => {
       it('should accept object with empty dayOfWeek', () => {
         const dto = { dayOfWeek: [] };

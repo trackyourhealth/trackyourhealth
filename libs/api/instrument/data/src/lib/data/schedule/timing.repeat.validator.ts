@@ -5,6 +5,7 @@ import {
   isNotDayOfWeek,
   isNotDurationUnit,
   isNotInteger,
+  isNotPeriodUnit,
   MAX_POSITIVE_INT,
   MIN_POSITIVE_INT,
   outOfPositiveIntRange,
@@ -133,6 +134,44 @@ export class TimingRepeatValidator {
     return ok(timing);
   }
 
+  private static validatePeriod(
+    timing: TimingRepeat,
+  ): Result<TimingRepeat, Error> {
+    const { period, periodUnit, periodMax } = timing;
+    if (
+      period === undefined &&
+      (periodUnit !== undefined || periodMax !== undefined)
+    ) {
+      return err(
+        new Error(
+          'periodUnit and periodMax must not be defined if period is undefined',
+        ),
+      );
+    }
+    if (period !== undefined) {
+      if (typeof period !== 'number') {
+        return err(new Error('period must be a number'));
+      }
+      if (periodUnit === undefined) {
+        return err(
+          new Error('periodUnit must not be undefined if period is defined'),
+        );
+      }
+      if (isNotPeriodUnit(periodUnit)) {
+        return err(new Error(`${periodUnit} is not a valid periodUnit`));
+      }
+      if (periodMax !== undefined) {
+        if (typeof periodMax !== 'number') {
+          return err(new Error('periodMax must be a number'));
+        }
+        if (period > periodMax) {
+          return err(new Error('period must not be a bigger than periodMax'));
+        }
+      }
+    }
+    return ok(timing);
+  }
+
   private static validateDayOfWeek(
     timing: TimingRepeat,
   ): Result<TimingRepeat, Error> {
@@ -151,6 +190,7 @@ export class TimingRepeatValidator {
     return this.validateCount(scheduleDto)
       .andThen(this.validateDuration)
       .andThen(this.validateFrequency)
+      .andThen(this.validatePeriod)
       .andThen(this.validateDayOfWeek);
   }
 }
