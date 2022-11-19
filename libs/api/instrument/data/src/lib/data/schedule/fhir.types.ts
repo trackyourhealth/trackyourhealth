@@ -5,6 +5,11 @@ import { Zero } from 'type-fest/source/numeric';
 
 export type Decimal = number;
 
+export const isNotDurationUnit = (unit: string): boolean =>
+  !Object.values(TimingRepeat.DurationUnitEnum).includes(
+    unit as TimingRepeat.DurationUnitEnum,
+  );
+
 export const isNotInteger = (n: unknown): boolean =>
   typeof n !== 'number' || !Number.isSafeInteger(n);
 

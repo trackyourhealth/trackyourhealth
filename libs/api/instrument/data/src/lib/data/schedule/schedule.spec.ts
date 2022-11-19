@@ -1,3 +1,5 @@
+import { TimingRepeat } from '@smile-cdr/fhirts/dist/FHIR-R4/classes/timingRepeat';
+
 import { DaysOfWeek, MAX_POSITIVE_INT, MIN_POSITIVE_INT } from './fhir.types';
 import { Schedule } from './schedule';
 
@@ -76,6 +78,109 @@ describe('Schedule', () => {
         const dto = { count: MIN_POSITIVE_INT + 1, countMax: MIN_POSITIVE_INT };
         const scheduleResult = Schedule.create(dto);
         expect(scheduleResult.isErr()).toBeTruthy();
+      });
+    });
+
+    describe('duration', () => {
+      const validDuration = 0.5;
+      const validDurationUnit = TimingRepeat.DurationUnitEnum.A;
+      const validDurationMax = 34.75;
+
+      it('should reject object with undefined duration and valid unit and undefined max', () => {
+        const dto = { durationUnit: validDurationUnit };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with undefined duration and undefined unit and valid max', () => {
+        const dto = { durationMax: validDurationMax };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with valid duration and undefined unit and undefined max', () => {
+        const dto = { duration: validDuration };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with valid duration and invalid unit code and undefined max', () => {
+        const dto = { duration: validDuration, durationUnit: 'invalid' };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with valid duration and invalid unit type and undefined max', () => {
+        const dto = {
+          duration: validDuration,
+          durationUnit: { key: 'invalid' },
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with invalid duration and valid unit and undefined max', () => {
+        const dto = {
+          duration: 'invalid',
+          durationUnit: validDurationUnit,
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with valid duration and valid unit and invalid max type', () => {
+        const dto = {
+          duration: validDuration,
+          durationUnit: validDurationUnit,
+          durationMax: 'invalid',
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with valid duration bigger than max and valid unit', () => {
+        const dto = {
+          duration: validDuration + 1,
+          durationUnit: validDurationUnit,
+          durationMax: validDuration,
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should accept object with valid duration equal to max and valid unit', () => {
+        const dto = {
+          duration: validDuration,
+          durationUnit: validDurationUnit,
+          durationMax: validDuration,
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isOk()).toBeTruthy();
+        const schedule = scheduleResult._unsafeUnwrap();
+        expect(schedule.serialize()).toStrictEqual(dto);
+      });
+
+      it('should accept object with valid duration and valid unit and undefined max', () => {
+        const dto = {
+          duration: validDuration,
+          durationUnit: validDurationUnit,
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isOk()).toBeTruthy();
+        const schedule = scheduleResult._unsafeUnwrap();
+        expect(schedule.serialize()).toStrictEqual(dto);
+      });
+
+      it('should accept object with valid duration and valid unit and valid max', () => {
+        const dto = {
+          duration: validDuration,
+          durationUnit: validDurationUnit,
+          durationMax: validDurationMax,
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isOk()).toBeTruthy();
+        const schedule = scheduleResult._unsafeUnwrap();
+        expect(schedule.serialize()).toStrictEqual(dto);
       });
     });
 
