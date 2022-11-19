@@ -4,12 +4,23 @@ import { NonNegativeInteger } from 'type-fest';
 import { Zero } from 'type-fest/source/numeric';
 
 export type Decimal = number;
-// 1 .. 2,147,483,647
+
+export const isNotInteger = (n: unknown): boolean =>
+  typeof n !== 'number' || !Number.isInteger(n);
+
 export type PositiveInt<T extends number> = T extends Zero
   ? never
   : NonNegativeInteger<T>;
-// 0 .. 2,147,483,647
+export const MIN_POSITIVE_INT = 1;
+export const MAX_POSITIVE_INT = 2147483647;
+export const outOfPositiveIntRange = (n: number): boolean =>
+  n < MIN_POSITIVE_INT || n > MAX_POSITIVE_INT;
+
 export type UnsignedInt<T extends number> = NonNegativeInteger<T>;
+export const MIN_UNSIGNED_INT = 0;
+export const MAX_UNSIGNED_INT = 2147483647;
+export const outOfUnsignedIntRange = (n: number): boolean =>
+  n < MIN_UNSIGNED_INT || n > MAX_UNSIGNED_INT;
 
 // http://hl7.org/fhir/R4B/valueset-days-of-week.html
 export const DaysOfWeek = [

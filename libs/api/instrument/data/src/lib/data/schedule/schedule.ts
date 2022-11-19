@@ -2,6 +2,7 @@ import {
   Duration,
   TimingRepeat,
 } from '@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4';
+import { Result } from 'neverthrow';
 
 import {
   DayOfWeek,
@@ -12,11 +13,12 @@ import {
   UnsignedInt,
   WhenCode,
 } from './fhir.types';
+import { TimingRepeatValidator } from './timing.repeat.validator';
 
 export class Schedule {
   private timing: TimingRepeat;
 
-  constructor(timing?: TimingRepeat) {
+  private constructor(timing: TimingRepeat) {
     // TODO: validate timing parameter
     this.timing = { ...timing };
   }
@@ -114,5 +116,18 @@ export class Schedule {
     this.timing.when = when;
     this.timing.offset = offset;
     return this;
+  }
+
+  serialize(): TimingRepeat {
+    return { ...this.timing };
+  }
+
+  static validate(timing: object): Result<TimingRepeat, Error> {
+    const schedule = timing as TimingRepeat;
+    return TimingRepeatValidator.validate(schedule);
+  }
+
+  static create(timing: object): Result<Schedule, Error> {
+    return this.validate(timing).map((s) => new Schedule(s));
   }
 }
