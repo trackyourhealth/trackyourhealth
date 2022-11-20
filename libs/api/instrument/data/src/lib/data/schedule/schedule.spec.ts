@@ -1,5 +1,6 @@
 import { TimingRepeat } from '@smile-cdr/fhirts/dist/FHIR-R4/classes/timingRepeat';
 
+import { Schedule } from './schedule';
 import {
   DaysOfWeek,
   MAX_POSITIVE_INT,
@@ -7,8 +8,7 @@ import {
   MIN_POSITIVE_INT,
   MIN_UNSIGNED_INT,
   WhenCodes,
-} from './fhir.types';
-import { Schedule } from './schedule';
+} from './schedule.types';
 
 describe('Schedule', () => {
   describe('validate', () => {

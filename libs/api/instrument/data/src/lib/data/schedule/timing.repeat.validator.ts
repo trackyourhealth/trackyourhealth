@@ -14,7 +14,7 @@ import {
   MIN_UNSIGNED_INT,
   outOfPositiveIntRange,
   outOfUnsignedIntRange,
-} from './fhir.types';
+} from './schedule.types';
 
 export class TimingRepeatValidator {
   private static validateCount(

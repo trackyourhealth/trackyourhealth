@@ -12,7 +12,7 @@ import {
   Range,
   UnsignedInt,
   WhenCode,
-} from './fhir.types';
+} from './schedule.types';
 import { TimingRepeatValidator } from './timing.repeat.validator';
 
 export class Schedule {
