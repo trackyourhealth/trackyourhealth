@@ -55,6 +55,18 @@ const timeRegex = /([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\.[0-9]+)?/;
 export const isNotTimeOfDay = (time: string): boolean =>
   isNotString(time) || !timeRegex.test(time);
 
+// TODO: Are Template Literal Types reasonable here? Optional part from regex missing
+type Digit01 = '0' | '1';
+type Digit03 = Digit01 | '2' | '3';
+type Digit05 = Digit03 | '4' | '5';
+type Digit09 = Digit05 | '6' | '7' | '8' | '9';
+type DigitHours01 = `${Digit01}${Digit09}`;
+type DigitHours2 = `2${Digit03}`;
+type DigitHours = DigitHours01 | DigitHours2;
+type DigitMin = `${Digit05}${Digit09}`;
+type DigitSec = DigitMin | '60';
+export type TimeOfDay = `${DigitHours}:${DigitMin}:${DigitSec}`;
+
 // http://hl7.org/fhir/R4B/codesystem-event-timing.html
 // http://hl7.org/fhir/R4B/valueset-event-timing.html
 export const WhenCodes = [
