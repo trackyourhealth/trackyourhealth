@@ -6,6 +6,7 @@ import {
   isNotDurationUnit,
   isNotInteger,
   isNotPeriodUnit,
+  isNotTimeOfDay,
   MAX_POSITIVE_INT,
   MIN_POSITIVE_INT,
   outOfPositiveIntRange,
@@ -186,11 +187,34 @@ export class TimingRepeatValidator {
     return ok(timing);
   }
 
+  private static validateTimeOfDay(
+    timing: TimingRepeat,
+  ): Result<TimingRepeat, Error> {
+    const { timeOfDay, when } = timing;
+    if (timeOfDay !== undefined) {
+      if (when !== undefined) {
+        return err(
+          new Error('timeOfDay must not be defined if when is defined'),
+        );
+      }
+      if (!Array.isArray(timeOfDay)) {
+        return err(new Error('timeOfDay must be an array'));
+      }
+      for (const time of timeOfDay) {
+        if (isNotTimeOfDay(time)) {
+          return err(new Error(`${time} is not a valid timeOfDay code`));
+        }
+      }
+    }
+    return ok(timing);
+  }
+
   static validate(scheduleDto: TimingRepeat): Result<TimingRepeat, Error> {
     return this.validateCount(scheduleDto)
       .andThen(this.validateDuration)
       .andThen(this.validateFrequency)
       .andThen(this.validatePeriod)
-      .andThen(this.validateDayOfWeek);
+      .andThen(this.validateDayOfWeek)
+      .andThen(this.validateTimeOfDay);
   }
 }

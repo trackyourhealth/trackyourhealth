@@ -47,6 +47,14 @@ export type DayOfWeek = DaysOfWeekType[number];
 export const isNotDayOfWeek = (day: string): boolean =>
   !DaysOfWeek.includes(day as DayOfWeek);
 
+const isNotString = (obj: unknown): boolean =>
+  !(typeof obj === 'string' || obj instanceof String);
+
+// http://hl7.org/fhir/R4B/datatypes.html#time
+const timeRegex = /([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\.[0-9]+)?/;
+export const isNotTimeOfDay = (time: string): boolean =>
+  isNotString(time) || !timeRegex.test(time);
+
 // http://hl7.org/fhir/R4B/codesystem-event-timing.html
 // http://hl7.org/fhir/R4B/valueset-event-timing.html
 export const WhenCodes = [

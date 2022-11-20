@@ -1,6 +1,12 @@
 import { TimingRepeat } from '@smile-cdr/fhirts/dist/FHIR-R4/classes/timingRepeat';
+import { ok } from 'neverthrow';
 
-import { DaysOfWeek, MAX_POSITIVE_INT, MIN_POSITIVE_INT } from './fhir.types';
+import {
+  DaysOfWeek,
+  MAX_POSITIVE_INT,
+  MIN_POSITIVE_INT,
+  WhenCodes,
+} from './fhir.types';
 import { Schedule } from './schedule';
 
 describe('Schedule', () => {
@@ -411,6 +417,57 @@ describe('Schedule', () => {
         const dto = { dayOfWeek: 'invalid' };
         const scheduleResult = Schedule.create(dto);
         expect(scheduleResult.isErr()).toBeTruthy();
+      });
+    });
+
+    describe('timeOfDay', () => {
+      const validTimeOfDay = ['12:00:00', '23:59:59'];
+      const validWhen = [WhenCodes[0]];
+
+      it('should reject object with valid timeOfDay and valid when', () => {
+        const dto = { timeOfDay: validTimeOfDay, when: validWhen };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with invalid timeOfDay', () => {
+        const dto = { timeOfDay: { key: 'invalid' } };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with invalid timeOfDay code', () => {
+        const dto = { timeOfDay: ['00:00:00', 'invalid'] };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with invalid timeOfDay code format HH:MM', () => {
+        const dto = { timeOfDay: ['20:00'] };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with invalid timeOfDay code 24:00:00', () => {
+        const dto = { timeOfDay: ['24:00:00'] };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with invalid timeOfDay code type', () => {
+        const dto = { timeOfDay: [1200] };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should accept object with valid timeOfDay code format HH:MM:SS', () => {
+        const dto = {
+          timeOfDay: ['00:00:00', '01:10:43', '19:22:60', '23:59:59'],
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isOk()).toBeTruthy();
+        const schedule = scheduleResult._unsafeUnwrap();
+        expect(schedule.serialize()).toStrictEqual(dto);
       });
     });
   });
