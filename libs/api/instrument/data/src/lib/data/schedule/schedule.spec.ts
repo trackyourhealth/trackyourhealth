@@ -1,10 +1,11 @@
 import { TimingRepeat } from '@smile-cdr/fhirts/dist/FHIR-R4/classes/timingRepeat';
-import { ok } from 'neverthrow';
 
 import {
   DaysOfWeek,
   MAX_POSITIVE_INT,
+  MAX_UNSIGNED_INT,
   MIN_POSITIVE_INT,
+  MIN_UNSIGNED_INT,
   WhenCodes,
 } from './fhir.types';
 import { Schedule } from './schedule';
@@ -420,54 +421,129 @@ describe('Schedule', () => {
       });
     });
 
-    describe('timeOfDay', () => {
-      const validTimeOfDay = ['12:00:00', '23:59:59'];
-      const validWhen = [WhenCodes[0]];
-
+    describe('timeOfDay and when', () => {
       it('should reject object with valid timeOfDay and valid when', () => {
-        const dto = { timeOfDay: validTimeOfDay, when: validWhen };
-        const scheduleResult = Schedule.create(dto);
-        expect(scheduleResult.isErr()).toBeTruthy();
-      });
-
-      it('should reject object with invalid timeOfDay', () => {
-        const dto = { timeOfDay: { key: 'invalid' } };
-        const scheduleResult = Schedule.create(dto);
-        expect(scheduleResult.isErr()).toBeTruthy();
-      });
-
-      it('should reject object with invalid timeOfDay code', () => {
-        const dto = { timeOfDay: ['00:00:00', 'invalid'] };
-        const scheduleResult = Schedule.create(dto);
-        expect(scheduleResult.isErr()).toBeTruthy();
-      });
-
-      it('should reject object with invalid timeOfDay code format HH:MM', () => {
-        const dto = { timeOfDay: ['20:00'] };
-        const scheduleResult = Schedule.create(dto);
-        expect(scheduleResult.isErr()).toBeTruthy();
-      });
-
-      it('should reject object with invalid timeOfDay code 24:00:00', () => {
-        const dto = { timeOfDay: ['24:00:00'] };
-        const scheduleResult = Schedule.create(dto);
-        expect(scheduleResult.isErr()).toBeTruthy();
-      });
-
-      it('should reject object with invalid timeOfDay code type', () => {
-        const dto = { timeOfDay: [1200] };
-        const scheduleResult = Schedule.create(dto);
-        expect(scheduleResult.isErr()).toBeTruthy();
-      });
-
-      it('should accept object with valid timeOfDay code format HH:MM:SS', () => {
         const dto = {
-          timeOfDay: ['00:00:00', '01:10:43', '19:22:60', '23:59:59'],
+          timeOfDay: ['12:00:00', '23:59:59'],
+          when: [WhenCodes[0]],
         };
         const scheduleResult = Schedule.create(dto);
-        expect(scheduleResult.isOk()).toBeTruthy();
-        const schedule = scheduleResult._unsafeUnwrap();
-        expect(schedule.serialize()).toStrictEqual(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      describe('timeOfDay', () => {
+        it('should reject object with invalid timeOfDay', () => {
+          const dto = { timeOfDay: { key: 'invalid' } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with invalid timeOfDay code', () => {
+          const dto = { timeOfDay: ['00:00:00', 'invalid'] };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with invalid timeOfDay code format HH:MM', () => {
+          const dto = { timeOfDay: ['20:00'] };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with invalid timeOfDay code 24:00:00', () => {
+          const dto = { timeOfDay: ['24:00:00'] };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with invalid timeOfDay code type', () => {
+          const dto = { timeOfDay: [1200] };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should accept object with empty timeOfDay', () => {
+          const dto = { timeOfDay: [] };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isOk()).toBeTruthy();
+          const schedule = scheduleResult._unsafeUnwrap();
+          expect(schedule.serialize()).toStrictEqual(dto);
+        });
+
+        it('should accept object with valid timeOfDay code format HH:MM:SS', () => {
+          const dto = {
+            timeOfDay: ['00:00:00', '01:10:43', '19:22:60', '23:59:59'],
+          };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isOk()).toBeTruthy();
+          const schedule = scheduleResult._unsafeUnwrap();
+          expect(schedule.serialize()).toStrictEqual(dto);
+        });
+      });
+
+      describe('when', () => {
+        it('should reject object with invalid when', () => {
+          const dto = { when: 'invalid' };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with invalid when code', () => {
+          const dto = { when: ['invalid'] };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with invalid when code type', () => {
+          const dto = { when: [{ key: '' }] };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should accept object with empty when', () => {
+          const dto = { when: [] };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isOk()).toBeTruthy();
+          const schedule = scheduleResult._unsafeUnwrap();
+          expect(schedule.serialize()).toStrictEqual(dto);
+        });
+
+        it('should accept object with all valid when codes', () => {
+          const dto = { when: WhenCodes };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isOk()).toBeTruthy();
+          const schedule = scheduleResult._unsafeUnwrap();
+          expect(schedule.serialize()).toStrictEqual(dto);
+        });
+
+        it('should reject object with undefined when and valid offset', () => {
+          const dto = { offset: MIN_UNSIGNED_INT };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with valid when and invalid offset', () => {
+          const dto = { when: WhenCodes, offset: 'invalid' };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with valid when and out of range offset', () => {
+          let dto = { when: WhenCodes, offset: MIN_UNSIGNED_INT - 1 };
+          let scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+          dto = { when: WhenCodes, offset: MAX_UNSIGNED_INT + 1 };
+          scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should accept object with valid when and valid offset', () => {
+          const dto = { when: WhenCodes, offset: MAX_UNSIGNED_INT };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isOk()).toBeTruthy();
+          const schedule = scheduleResult._unsafeUnwrap();
+          expect(schedule.serialize()).toStrictEqual(dto);
+        });
       });
     });
   });

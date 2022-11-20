@@ -7,9 +7,13 @@ import {
   isNotInteger,
   isNotPeriodUnit,
   isNotTimeOfDay,
+  isNotWhenCode,
   MAX_POSITIVE_INT,
+  MAX_UNSIGNED_INT,
   MIN_POSITIVE_INT,
+  MIN_UNSIGNED_INT,
   outOfPositiveIntRange,
+  outOfUnsignedIntRange,
 } from './fhir.types';
 
 export class TimingRepeatValidator {
@@ -190,13 +194,8 @@ export class TimingRepeatValidator {
   private static validateTimeOfDay(
     timing: TimingRepeat,
   ): Result<TimingRepeat, Error> {
-    const { timeOfDay, when } = timing;
+    const { timeOfDay } = timing;
     if (timeOfDay !== undefined) {
-      if (when !== undefined) {
-        return err(
-          new Error('timeOfDay must not be defined if when is defined'),
-        );
-      }
       if (!Array.isArray(timeOfDay)) {
         return err(new Error('timeOfDay must be an array'));
       }
@@ -209,12 +208,60 @@ export class TimingRepeatValidator {
     return ok(timing);
   }
 
+  private static validateWhen(
+    timing: TimingRepeat,
+  ): Result<TimingRepeat, Error> {
+    const { when, offset } = timing;
+    if (when === undefined && offset !== undefined) {
+      return err(
+        new Error('when must not be an undefined if offset is defined'),
+      );
+    }
+    if (when !== undefined) {
+      if (!Array.isArray(when)) {
+        return err(new Error('when must be an array'));
+      }
+      for (const code of when) {
+        if (isNotWhenCode(code)) {
+          return err(new Error(`${code} is not a valid when code`));
+        }
+      }
+      if (offset !== undefined) {
+        if (typeof offset !== 'number') {
+          return err(new Error('offset must be a number'));
+        }
+        if (outOfUnsignedIntRange(offset)) {
+          return err(
+            new Error(
+              `offset must be between ${MIN_UNSIGNED_INT} and ${MAX_UNSIGNED_INT}`,
+            ),
+          );
+        }
+      }
+    }
+    return ok(timing);
+  }
+
+  private static validateTimeOfDayAndWhen(
+    timing: TimingRepeat,
+  ): Result<TimingRepeat, Error> {
+    const { timeOfDay, when } = timing;
+    if (timeOfDay !== undefined && when !== undefined) {
+      return err(
+        new Error('timeOfDay and when must not be defined simultaneously'),
+      );
+    }
+    return TimingRepeatValidator.validateTimeOfDay(timing).andThen(
+      TimingRepeatValidator.validateWhen,
+    );
+  }
+
   static validate(scheduleDto: TimingRepeat): Result<TimingRepeat, Error> {
     return this.validateCount(scheduleDto)
       .andThen(this.validateDuration)
       .andThen(this.validateFrequency)
       .andThen(this.validatePeriod)
       .andThen(this.validateDayOfWeek)
-      .andThen(this.validateTimeOfDay);
+      .andThen(this.validateTimeOfDayAndWhen);
   }
 }

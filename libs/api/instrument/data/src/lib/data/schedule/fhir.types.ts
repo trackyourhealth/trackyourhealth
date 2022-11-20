@@ -100,6 +100,8 @@ export const WhenCodes = [
 ] as const;
 type WhenCodesType = typeof WhenCodes;
 export type WhenCode = WhenCodesType[number];
+export const isNotWhenCode = (code: string): boolean =>
+  !WhenCodes.includes(code as WhenCode);
 
 interface PeriodWithoutStart {
   start?: never;
