@@ -2,6 +2,7 @@ import { TimingRepeat } from '@smile-cdr/fhirts/dist/FHIR-R4/classes/timingRepea
 import { err, ok, Result } from 'neverthrow';
 
 import {
+  isNotComparator,
   isNotDayOfWeek,
   isNotDurationUnit,
   isNotInteger,
@@ -17,6 +18,60 @@ import {
 } from './schedule.types';
 
 export class TimingRepeatValidator {
+  private static validateBoundsDuration(
+    timing: TimingRepeat,
+  ): Result<TimingRepeat, Error> {
+    const { boundsDuration } = timing;
+    if (boundsDuration === undefined) {
+      return ok(timing);
+    }
+    const { value, code, comparator } = boundsDuration;
+    if (
+      (value === undefined && code !== undefined) ||
+      (value !== undefined && code === undefined)
+    ) {
+      return err(new Error('boundsDuration: value and code must be defined'));
+    }
+    if (value !== undefined) {
+      if (typeof value !== 'number') {
+        return err(new Error('boundsDuration: value must be a number'));
+      }
+      if (code !== undefined && isNotDurationUnit(code)) {
+        return err(new Error(`boundsDuration: ${code} is not a valid code`));
+      }
+      if (comparator !== undefined && isNotComparator(comparator)) {
+        return err(
+          new Error(`boundsDuration: ${comparator} is not a valid comparator`),
+        );
+      }
+    } else if (comparator !== undefined) {
+      return err(
+        new Error(
+          'boundsDuration: comparator must not be defined if value and code are undefined',
+        ),
+      );
+    }
+    return ok(timing);
+  }
+
+  private static validateBounds(
+    timing: TimingRepeat,
+  ): Result<TimingRepeat, Error> {
+    const { boundsDuration, boundsPeriod, boundsRange } = timing;
+    let boundsCount = 0;
+    if (boundsDuration !== undefined) boundsCount++;
+    if (boundsPeriod !== undefined) boundsCount++;
+    if (boundsRange !== undefined) boundsCount++;
+    if (boundsCount > 1) {
+      return err(
+        new Error(
+          'only 1 of duration, period or range of bounds may be defined',
+        ),
+      );
+    }
+    return TimingRepeatValidator.validateBoundsDuration(timing);
+  }
+
   private static validateCount(
     timing: TimingRepeat,
   ): Result<TimingRepeat, Error> {
@@ -257,7 +312,8 @@ export class TimingRepeatValidator {
   }
 
   static validate(scheduleDto: TimingRepeat): Result<TimingRepeat, Error> {
-    return this.validateCount(scheduleDto)
+    return this.validateBounds(scheduleDto)
+      .andThen(this.validateCount)
       .andThen(this.validateDuration)
       .andThen(this.validateFrequency)
       .andThen(this.validatePeriod)

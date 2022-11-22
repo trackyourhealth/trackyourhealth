@@ -103,6 +103,11 @@ export type WhenCode = WhenCodesType[number];
 export const isNotWhenCode = (code: string): boolean =>
   !WhenCodes.includes(code as WhenCode);
 
+export const isNotComparator = (comp: string): boolean =>
+  !Object.values(Q.Quantity.ComparatorEnum).includes(
+    comp as Q.Quantity.ComparatorEnum,
+  );
+
 interface PeriodWithoutStart {
   start?: never;
   end: Date;

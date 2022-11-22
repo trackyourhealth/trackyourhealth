@@ -1,3 +1,5 @@
+import { Duration } from '@smile-cdr/fhirts/dist/FHIR-R4/classes/duration';
+import { Quantity } from '@smile-cdr/fhirts/dist/FHIR-R4/classes/quantity';
 import { TimingRepeat } from '@smile-cdr/fhirts/dist/FHIR-R4/classes/timingRepeat';
 
 import { Schedule } from './schedule';
@@ -18,6 +20,112 @@ describe('Schedule', () => {
       expect(scheduleResult.isOk()).toBeTruthy();
       const schedule = scheduleResult._unsafeUnwrap();
       expect(schedule.serialize()).toStrictEqual(dto);
+    });
+
+    describe('bounds', () => {
+      const validDuration = {
+        value: 0.5,
+        code: TimingRepeat.DurationUnitEnum.D,
+        comparator: Duration.ComparatorEnum.LessThanOrEqualTo,
+      };
+      const validPeriod = {
+        start: new Date(),
+        end: new Date(),
+      };
+      const validRange = {
+        low: {
+          value: 10,
+          code: TimingRepeat.PeriodUnitEnum.Min,
+          comparator: Quantity.ComparatorEnum.GreaterThan,
+        },
+      };
+
+      it('should reject object with valid boundsDuration and boundsPeriod', () => {
+        const dto = {
+          boundsDuration: validDuration,
+          boundsPeriod: validPeriod,
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with valid boundsDuration and boundsRange', () => {
+        const dto = {
+          boundsDuration: validDuration,
+          boundsRange: validRange,
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with valid boundsPeriod and boundsRange', () => {
+        const dto = {
+          boundsPeriod: validPeriod,
+          boundsRange: validRange,
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      it('should reject object with valid boundsDuration, boundsPeriod and boundsRange', () => {
+        const dto = {
+          boundsDuration: validDuration,
+          boundsPeriod: validPeriod,
+          boundsRange: validRange,
+        };
+        const scheduleResult = Schedule.create(dto);
+        expect(scheduleResult.isErr()).toBeTruthy();
+      });
+
+      describe('boundsDuration', () => {
+        it('should reject object with invalid value and valid code', () => {
+          const dto = {
+            boundsDuration: { ...validDuration, value: 'invalid' },
+          };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with valid value and undefined code and undefined comparator', () => {
+          const dto = {
+            boundsDuration: { value: validDuration.value },
+          };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with undefined value and code and valid comparator', () => {
+          const dto = {
+            boundsDuration: { comparator: validDuration.comparator },
+          };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with valid value and invalid code', () => {
+          const dto = {
+            boundsDuration: { ...validDuration, code: 'invalid' },
+          };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with valid value and code and invalid comparator', () => {
+          const dto = {
+            boundsDuration: { ...validDuration, comparator: 'invalid' },
+          };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should accept object with valid value and code and comparator', () => {
+          const dto = { boundsDuration: validDuration };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isOk()).toBeTruthy();
+          const schedule = scheduleResult._unsafeUnwrap();
+          expect(schedule.serialize()).toStrictEqual(dto);
+        });
+      });
     });
 
     describe('count', () => {
