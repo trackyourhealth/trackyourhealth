@@ -1,3 +1,4 @@
+import { Quantity } from '@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4';
 import { TimingRepeat } from '@smile-cdr/fhirts/dist/FHIR-R4/classes/timingRepeat';
 import { err, ok, Result } from 'neverthrow';
 
@@ -61,11 +62,6 @@ export class TimingRepeatValidator {
     const { boundsPeriod } = timing;
     if (boundsPeriod !== undefined) {
       const { start, end } = boundsPeriod;
-      if (start === undefined && end === undefined) {
-        return err(
-          new Error('boundsPeriod: at least start or end must be defined'),
-        );
-      }
       if (start !== undefined && isNotDate(start)) {
         return err(new Error('boundsPeriod: start has to be a date object'));
       }
@@ -76,6 +72,62 @@ export class TimingRepeatValidator {
         return err(
           new Error('boundsPeriod: start must be smaller or equal to end'),
         );
+      }
+    }
+    return ok(timing);
+  }
+
+  private static validateBoundsRangeQuantity(
+    quantity: Quantity,
+    property: 'low' | 'high',
+  ): Result<Quantity, Error> {
+    if (typeof quantity !== 'object') {
+      return err(
+        new Error(`boundsRange: defined ${property} must be an object`),
+      );
+    }
+    const { value, code, comparator } = quantity;
+    if (value === undefined || typeof value !== 'number') {
+      return err(
+        new Error(`boundsRange: value of ${property} must be a number`),
+      );
+    }
+    if (code === undefined || isNotDurationUnit(code)) {
+      return err(
+        new Error(`boundsRange: code of ${property} must be a duation unit`),
+      );
+    }
+    if (comparator !== undefined && isNotComparator(comparator)) {
+      return err(
+        new Error(`boundsRange: comparator of ${property} is an invalid code`),
+      );
+    }
+    return ok(quantity);
+  }
+
+  private static validateBoundsRange(
+    timing: TimingRepeat,
+  ): Result<TimingRepeat, Error> {
+    const { boundsRange } = timing;
+    if (boundsRange !== undefined) {
+      const { low, high } = boundsRange;
+      if (low !== undefined) {
+        const lowResult = TimingRepeatValidator.validateBoundsRangeQuantity(
+          low,
+          'low',
+        );
+        if (lowResult.isErr()) {
+          return lowResult;
+        }
+      }
+      if (high !== undefined) {
+        const highResult = TimingRepeatValidator.validateBoundsRangeQuantity(
+          high,
+          'high',
+        );
+        if (highResult.isErr()) {
+          return highResult;
+        }
       }
     }
     return ok(timing);
@@ -96,9 +148,9 @@ export class TimingRepeatValidator {
         ),
       );
     }
-    return TimingRepeatValidator.validateBoundsDuration(timing).andThen(
-      TimingRepeatValidator.validateBoundsPeriod,
-    );
+    return TimingRepeatValidator.validateBoundsDuration(timing)
+      .andThen(TimingRepeatValidator.validateBoundsPeriod)
+      .andThen(TimingRepeatValidator.validateBoundsRange);
   }
 
   private static validateCount(

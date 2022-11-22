@@ -131,10 +131,12 @@ describe('Schedule', () => {
         const soonerDate = new Date('2021-05-11');
         const laterDate = new Date('2021-05-17');
 
-        it('should reject object with undefined start and undefined end', () => {
+        it('should accept object with undefined start and undefined end', () => {
           const dto = { boundsPeriod: {} };
           const scheduleResult = Schedule.create(dto);
-          expect(scheduleResult.isErr()).toBeTruthy();
+          expect(scheduleResult.isOk()).toBeTruthy();
+          const schedule = scheduleResult._unsafeUnwrap();
+          expect(schedule.serialize()).toStrictEqual(dto);
         });
 
         it('should reject object with invalid start and undefined end', () => {
@@ -193,6 +195,159 @@ describe('Schedule', () => {
 
         it('should accept object with valid start smaller than valid end', () => {
           const dto = { boundsPeriod: { start: soonerDate, end: laterDate } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isOk()).toBeTruthy();
+          const schedule = scheduleResult._unsafeUnwrap();
+          expect(schedule.serialize()).toStrictEqual(dto);
+        });
+      });
+
+      describe('boundsRange', () => {
+        const lowerQuant = {
+          value: 0.5,
+          code: TimingRepeat.PeriodUnitEnum.D,
+          comparator: Quantity.ComparatorEnum.GreaterThan,
+        };
+        const higherQuant = {
+          value: 1.5,
+          code: TimingRepeat.PeriodUnitEnum.D,
+          comparator: Quantity.ComparatorEnum.GreaterThan,
+        };
+
+        it('should reject object with invalid low and undefined high', () => {
+          const dto = { boundsRange: { low: 'invalid' } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with invalid low object and undefined high', () => {
+          const dto = { boundsRange: { low: { key: 'invalid' } } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with low missing code and undefined high', () => {
+          const dto = { boundsRange: { low: { value: lowerQuant.value } } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with low missing value and undefined high', () => {
+          const dto = { boundsRange: { low: { code: lowerQuant.code } } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with invalid low value and undefined high', () => {
+          const dto = {
+            boundsRange: {
+              low: { value: 'invalid', code: higherQuant.code },
+            },
+          };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with invalid low code and undefined high', () => {
+          const dto = {
+            boundsRange: {
+              low: { value: higherQuant.value, code: 'invalid' },
+            },
+          };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with invalid low comparator and undefined high', () => {
+          const dto = {
+            boundsRange: {
+              low: {
+                value: higherQuant.value,
+                code: higherQuant.code,
+                comparator: 'invalid',
+              },
+            },
+          };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with undefined low and invalid high', () => {
+          const dto = { boundsRange: { high: 'invalid' } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with undefined low and invalid high object', () => {
+          const dto = { boundsRange: { high: { key: 'invalid' } } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with undefined low and high missing code', () => {
+          const dto = { boundsRange: { high: { value: lowerQuant.value } } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with undefined value and high missing value', () => {
+          const dto = { boundsRange: { high: { code: lowerQuant.code } } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with undefined low and invalid high value', () => {
+          const dto = {
+            boundsRange: {
+              high: { value: 'invalid', code: higherQuant.code },
+            },
+          };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with undefined low and invalid high code', () => {
+          const dto = {
+            boundsRange: {
+              high: { value: higherQuant.value, code: 'invalid' },
+            },
+          };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with undefined low and invalid high comparator', () => {
+          const dto = {
+            boundsRange: {
+              high: {
+                value: higherQuant.value,
+                code: higherQuant.code,
+                comparator: 'invalid',
+              },
+            },
+          };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should accept object with valid low and undefined high', () => {
+          const dto = { boundsRange: { low: lowerQuant } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isOk()).toBeTruthy();
+          const schedule = scheduleResult._unsafeUnwrap();
+          expect(schedule.serialize()).toStrictEqual(dto);
+        });
+
+        it('should accept object with undefind low and valid high', () => {
+          const dto = { boundsRange: { high: higherQuant } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isOk()).toBeTruthy();
+          const schedule = scheduleResult._unsafeUnwrap();
+          expect(schedule.serialize()).toStrictEqual(dto);
+        });
+
+        it('should accept object with valid low and valid high', () => {
+          const dto = { boundsRange: { low: lowerQuant, high: higherQuant } };
           const scheduleResult = Schedule.create(dto);
           expect(scheduleResult.isOk()).toBeTruthy();
           const schedule = scheduleResult._unsafeUnwrap();
