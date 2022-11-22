@@ -18,6 +18,9 @@ export const isNotPeriodUnit = (unit: string): boolean =>
 export const isNotInteger = (n: unknown): boolean =>
   typeof n !== 'number' || !Number.isSafeInteger(n);
 
+export const isNotDate = (n: unknown): boolean =>
+  typeof n !== 'object' || !(n instanceof Date);
+
 export type PositiveInt<T extends number> = T extends Zero
   ? never
   : NonNegativeInteger<T>;

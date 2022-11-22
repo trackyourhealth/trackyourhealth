@@ -3,6 +3,7 @@ import { err, ok, Result } from 'neverthrow';
 
 import {
   isNotComparator,
+  isNotDate,
   isNotDayOfWeek,
   isNotDurationUnit,
   isNotInteger,
@@ -54,6 +55,32 @@ export class TimingRepeatValidator {
     return ok(timing);
   }
 
+  private static validateBoundsPeriod(
+    timing: TimingRepeat,
+  ): Result<TimingRepeat, Error> {
+    const { boundsPeriod } = timing;
+    if (boundsPeriod !== undefined) {
+      const { start, end } = boundsPeriod;
+      if (start === undefined && end === undefined) {
+        return err(
+          new Error('boundsPeriod: at least start or end must be defined'),
+        );
+      }
+      if (start !== undefined && isNotDate(start)) {
+        return err(new Error('boundsPeriod: start has to be a date object'));
+      }
+      if (end !== undefined && isNotDate(end)) {
+        return err(new Error('boundsPeriod: start has to be a date object'));
+      }
+      if (start !== undefined && end !== undefined && start > end) {
+        return err(
+          new Error('boundsPeriod: start must be smaller or equal to end'),
+        );
+      }
+    }
+    return ok(timing);
+  }
+
   private static validateBounds(
     timing: TimingRepeat,
   ): Result<TimingRepeat, Error> {
@@ -69,7 +96,9 @@ export class TimingRepeatValidator {
         ),
       );
     }
-    return TimingRepeatValidator.validateBoundsDuration(timing);
+    return TimingRepeatValidator.validateBoundsDuration(timing).andThen(
+      TimingRepeatValidator.validateBoundsPeriod,
+    );
   }
 
   private static validateCount(

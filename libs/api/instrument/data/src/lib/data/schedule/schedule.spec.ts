@@ -126,6 +126,79 @@ describe('Schedule', () => {
           expect(schedule.serialize()).toStrictEqual(dto);
         });
       });
+
+      describe('boundsPeriod', () => {
+        const soonerDate = new Date('2021-05-11');
+        const laterDate = new Date('2021-05-17');
+
+        it('should reject object with undefined start and undefined end', () => {
+          const dto = { boundsPeriod: {} };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with invalid start and undefined end', () => {
+          const dto = { boundsPeriod: { start: 'invalid' } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with invalid start object and undefined end', () => {
+          const dto = { boundsPeriod: { start: { key: 'invalid' } } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with undefined start and invalid end', () => {
+          const dto = { boundsPeriod: { end: 'invalid' } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with undefined start and invalid end object', () => {
+          const dto = { boundsPeriod: { end: { key: 'invalid' } } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should reject object with valid start greater than valid end', () => {
+          const dto = { boundsPeriod: { start: laterDate, end: soonerDate } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isErr()).toBeTruthy();
+        });
+
+        it('should accept object with valid start and undefined end', () => {
+          const dto = { boundsPeriod: { start: soonerDate } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isOk()).toBeTruthy();
+          const schedule = scheduleResult._unsafeUnwrap();
+          expect(schedule.serialize()).toStrictEqual(dto);
+        });
+
+        it('should accept object with undefined start and valid end', () => {
+          const dto = { boundsPeriod: { end: laterDate } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isOk()).toBeTruthy();
+          const schedule = scheduleResult._unsafeUnwrap();
+          expect(schedule.serialize()).toStrictEqual(dto);
+        });
+
+        it('should accept object with valid start equal to valid end', () => {
+          const dto = { boundsPeriod: { start: laterDate, end: laterDate } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isOk()).toBeTruthy();
+          const schedule = scheduleResult._unsafeUnwrap();
+          expect(schedule.serialize()).toStrictEqual(dto);
+        });
+
+        it('should accept object with valid start smaller than valid end', () => {
+          const dto = { boundsPeriod: { start: soonerDate, end: laterDate } };
+          const scheduleResult = Schedule.create(dto);
+          expect(scheduleResult.isOk()).toBeTruthy();
+          const schedule = scheduleResult._unsafeUnwrap();
+          expect(schedule.serialize()).toStrictEqual(dto);
+        });
+      });
     });
 
     describe('count', () => {
