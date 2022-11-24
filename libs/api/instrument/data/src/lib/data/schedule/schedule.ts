@@ -101,6 +101,7 @@ export class Schedule {
   withTimeOfDay(timeOfDay: TimeOfDay, ...timesOfDay: TimeOfDay[]) {
     this.timing.timeOfDay = [timeOfDay, ...timesOfDay];
     this.timing.when = undefined;
+    this.timing.offset = undefined;
     return this;
   }
 
