@@ -1,15 +1,17 @@
-import {
-  Duration,
-  TimingRepeat,
-} from '@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4';
+import { TimingRepeat } from '@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4';
 import { Result } from 'neverthrow';
 
 import {
+  Comparator,
   DayOfWeek,
   Decimal,
+  DurationUnit,
+  NonEmptyArray,
   Period,
+  PeriodUnit,
   PositiveInt,
   Range,
+  TimeOfDay,
   UnsignedInt,
   WhenCode,
 } from './schedule.types';
@@ -18,15 +20,14 @@ import { TimingRepeatValidator } from './timing.repeat.validator';
 export class Schedule {
   private timing: TimingRepeat;
 
-  private constructor(timing: TimingRepeat) {
-    // TODO: validate timing parameter
+  private constructor(timing?: TimingRepeat) {
     this.timing = { ...timing };
   }
 
   withBoundsDuration(
     duration: Decimal,
-    unit: TimingRepeat.DurationUnitEnum,
-    comparator?: Duration.ComparatorEnum,
+    unit: DurationUnit,
+    comparator?: Comparator,
   ) {
     this.timing.boundsDuration = {
       value: duration,
@@ -69,11 +70,7 @@ export class Schedule {
     return this;
   }
 
-  withDuration(
-    duration: Decimal,
-    unit: TimingRepeat.DurationUnitEnum,
-    max?: Decimal,
-  ) {
+  withDuration(duration: Decimal, unit: DurationUnit, max?: Decimal) {
     this.timing.duration = duration;
     this.timing.durationUnit = unit;
     this.timing.durationMax = max;
@@ -89,29 +86,28 @@ export class Schedule {
     return this;
   }
 
-  withPeriod(
-    period: Decimal,
-    unit: TimingRepeat.PeriodUnitEnum,
-    max?: Decimal,
-  ) {
+  withPeriod(period: Decimal, unit: PeriodUnit, max?: Decimal) {
     this.timing.period = period;
     this.timing.periodUnit = unit;
     this.timing.periodMax = max;
     return this;
   }
 
-  withDayOfWeek(daysOfWeek: DayOfWeek[]) {
-    this.timing.dayOfWeek = daysOfWeek;
+  withDayOfWeek(dayOfWeek: DayOfWeek, ...daysOfWeek: DayOfWeek[]) {
+    this.timing.dayOfWeek = [dayOfWeek, ...daysOfWeek];
     return this;
   }
 
-  withTimeOfDay(timesOfDay: string[]) {
-    this.timing.timeOfDay = timesOfDay;
+  withTimeOfDay(timeOfDay: TimeOfDay, ...timesOfDay: TimeOfDay[]) {
+    this.timing.timeOfDay = [timeOfDay, ...timesOfDay];
     this.timing.when = undefined;
     return this;
   }
 
-  withWhen<T extends number>(when: WhenCode[], offset?: UnsignedInt<T>) {
+  withWhen<T extends number>(
+    when: NonEmptyArray<WhenCode>,
+    offset?: UnsignedInt<T>,
+  ) {
     this.timing.timeOfDay = undefined;
     this.timing.when = when;
     this.timing.offset = offset;
@@ -129,5 +125,9 @@ export class Schedule {
 
   static create(timing: object): Result<Schedule, Error> {
     return this.validate(timing).map((s) => new Schedule(s));
+  }
+
+  static init(): Schedule {
+    return new Schedule();
   }
 }

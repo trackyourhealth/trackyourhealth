@@ -3,20 +3,23 @@ import { TimingRepeat } from '@smile-cdr/fhirts/dist/FHIR-R4/classes/timingRepea
 import { NonNegativeInteger } from 'type-fest';
 import { Zero } from 'type-fest/source/numeric';
 
+export type NonEmptyArray<T> = [T, ...T[]];
+
 export type Decimal = number;
 
+export type DurationUnit = TimingRepeat.DurationUnitEnum;
 export const isNotDurationUnit = (unit: string): boolean =>
   !Object.values(TimingRepeat.DurationUnitEnum).includes(
     unit as TimingRepeat.DurationUnitEnum,
   );
 
+export type PeriodUnit = TimingRepeat.PeriodUnitEnum;
 export const isNotPeriodUnit = (unit: string): boolean =>
   !Object.values(TimingRepeat.PeriodUnitEnum).includes(
     unit as TimingRepeat.PeriodUnitEnum,
   );
 
-export const isNotInteger = (n: unknown): boolean =>
-  typeof n !== 'number' || !Number.isSafeInteger(n);
+export const isNotInteger = (n: unknown): boolean => !Number.isSafeInteger(n);
 
 export const isNotDate = (n: unknown): boolean =>
   typeof n !== 'object' || !(n instanceof Date);
@@ -106,6 +109,7 @@ export type WhenCode = WhenCodesType[number];
 export const isNotWhenCode = (code: string): boolean =>
   !WhenCodes.includes(code as WhenCode);
 
+export type Comparator = Q.Quantity.ComparatorEnum;
 export const isNotComparator = (comp: string): boolean =>
   !Object.values(Q.Quantity.ComparatorEnum).includes(
     comp as Q.Quantity.ComparatorEnum,
