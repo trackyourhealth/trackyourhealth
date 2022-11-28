@@ -6,6 +6,7 @@ import {
   DayOfWeek,
   Decimal,
   DurationUnit,
+  formatTimeOfDay,
   NonEmptyArray,
   Period,
   PeriodUnit,
@@ -93,13 +94,13 @@ export class Schedule {
     return this;
   }
 
-  withDayOfWeek(dayOfWeek: DayOfWeek, ...daysOfWeek: DayOfWeek[]) {
-    this.timing.dayOfWeek = [dayOfWeek, ...daysOfWeek];
+  withDayOfWeek(...daysOfWeek: NonEmptyArray<DayOfWeek>) {
+    this.timing.dayOfWeek = [...daysOfWeek];
     return this;
   }
 
-  withTimeOfDay(timeOfDay: TimeOfDay, ...timesOfDay: TimeOfDay[]) {
-    this.timing.timeOfDay = [timeOfDay, ...timesOfDay];
+  withTimeOfDay(...timeOfDay: NonEmptyArray<TimeOfDay>) {
+    this.timing.timeOfDay = timeOfDay.map(formatTimeOfDay);
     this.timing.when = undefined;
     this.timing.offset = undefined;
     return this;
@@ -116,7 +117,9 @@ export class Schedule {
   }
 
   serialize(): TimingRepeat {
-    return { ...this.timing };
+    return Object.fromEntries(
+      Object.entries(this.timing).filter(([, v]) => v !== undefined),
+    );
   }
 
   static validate(timing: object): Result<TimingRepeat, Error> {
