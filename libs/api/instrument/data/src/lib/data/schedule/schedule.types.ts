@@ -78,10 +78,10 @@ type TimeOfDayMinutes = IntRange<0, 60>;
 type TimeOfDaySeconds = TimeOfDayMinutes;
 export type TimeOfDay = {
   h: TimeOfDayHours;
-  min: TimeOfDayMinutes;
-  sec: TimeOfDaySeconds;
+  min?: TimeOfDayMinutes;
+  sec?: TimeOfDaySeconds;
 };
-const doubleDigit = (n: IntRange<0, 100>): string =>
+const doubleDigit = (n: IntRange<0, 100> = 0): string =>
   n < 10 ? `0${n}` : String(n);
 export const formatTimeOfDay = (timeOfDay: TimeOfDay): string => {
   const h = doubleDigit(timeOfDay.h);
